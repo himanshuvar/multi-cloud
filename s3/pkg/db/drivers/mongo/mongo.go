@@ -21,7 +21,7 @@ import (
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
 	"github.com/micro/go-micro/metadata"
-	"github.com/opensds/multi-cloud/api/pkg/common"
+	"github.com/sodafoundation/multi-cloud/api/pkg/common"
 	log "github.com/sirupsen/logrus"
 )
 

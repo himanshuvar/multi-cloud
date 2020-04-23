@@ -18,11 +18,11 @@ import (
 	"time"
 
 	"github.com/emicklei/go-restful"
-	"github.com/opensds/multi-cloud/api/pkg/common"
-	"github.com/opensds/multi-cloud/api/pkg/policy"
-	. "github.com/opensds/multi-cloud/api/pkg/s3/datatype"
-	"github.com/opensds/multi-cloud/s3/pkg/utils"
-	s3 "github.com/opensds/multi-cloud/s3/proto"
+	"github.com/sodafoundation/multi-cloud/api/pkg/common"
+	"github.com/sodafoundation/multi-cloud/api/pkg/policy"
+	. "github.com/sodafoundation/multi-cloud/api/pkg/s3/datatype"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/utils"
+	s3 "github.com/sodafoundation/multi-cloud/s3/proto"
 	log "github.com/sirupsen/logrus"
 )
 

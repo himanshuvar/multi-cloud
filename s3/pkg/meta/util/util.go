@@ -4,8 +4,8 @@ import (
 	"context"
 	"encoding/hex"
 	"github.com/micro/go-micro/metadata"
-	"github.com/opensds/multi-cloud/api/pkg/common"
-	. "github.com/opensds/multi-cloud/s3/error"
+	"github.com/sodafoundation/multi-cloud/api/pkg/common"
+	. "github.com/sodafoundation/multi-cloud/s3/error"
 	log "github.com/sirupsen/logrus"
 	"github.com/xxtea/xxtea-go/xxtea"
 )

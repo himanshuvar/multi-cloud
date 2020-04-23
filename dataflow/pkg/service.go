@@ -23,15 +23,15 @@ import (
 	"strings"
 
 	log "github.com/sirupsen/logrus"
-	"github.com/opensds/multi-cloud/dataflow/pkg/db"
-	"github.com/opensds/multi-cloud/dataflow/pkg/job"
-	"github.com/opensds/multi-cloud/dataflow/pkg/kafka"
-	"github.com/opensds/multi-cloud/dataflow/pkg/model"
-	"github.com/opensds/multi-cloud/dataflow/pkg/plan"
-	"github.com/opensds/multi-cloud/dataflow/pkg/policy"
-	"github.com/opensds/multi-cloud/dataflow/pkg/utils"
-	. "github.com/opensds/multi-cloud/dataflow/pkg/utils"
-	pb "github.com/opensds/multi-cloud/dataflow/proto"
+	"github.com/sodafoundation/multi-cloud/dataflow/pkg/db"
+	"github.com/sodafoundation/multi-cloud/dataflow/pkg/job"
+	"github.com/sodafoundation/multi-cloud/dataflow/pkg/kafka"
+	"github.com/sodafoundation/multi-cloud/dataflow/pkg/model"
+	"github.com/sodafoundation/multi-cloud/dataflow/pkg/plan"
+	"github.com/sodafoundation/multi-cloud/dataflow/pkg/policy"
+	"github.com/sodafoundation/multi-cloud/dataflow/pkg/utils"
+	. "github.com/sodafoundation/multi-cloud/dataflow/pkg/utils"
+	pb "github.com/sodafoundation/multi-cloud/dataflow/proto"
 )
 
 type dataflowService struct{}

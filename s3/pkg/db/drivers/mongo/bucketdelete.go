@@ -20,8 +20,8 @@ import (
 
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
-	. "github.com/opensds/multi-cloud/s3/pkg/exception"
-	. "github.com/opensds/multi-cloud/s3/pkg/utils"
+	. "github.com/sodafoundation/multi-cloud/s3/pkg/exception"
+	. "github.com/sodafoundation/multi-cloud/s3/pkg/utils"
 	log "github.com/sirupsen/logrus"
 )
 

@@ -18,8 +18,8 @@ import (
 	"fmt"
 
 	log "github.com/sirupsen/logrus"
-	"github.com/opensds/multi-cloud/dataflow/pkg/model"
-	"github.com/opensds/multi-cloud/dataflow/pkg/scheduler/trigger"
+	"github.com/sodafoundation/multi-cloud/dataflow/pkg/model"
+	"github.com/sodafoundation/multi-cloud/dataflow/pkg/scheduler/trigger"
 	"github.com/robfig/cron"
 )
 

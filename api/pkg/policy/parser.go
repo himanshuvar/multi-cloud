@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/opensds/multi-cloud/api/pkg/utils"
+	"github.com/sodafoundation/multi-cloud/api/pkg/utils"
 )
 
 type TokenPair struct {

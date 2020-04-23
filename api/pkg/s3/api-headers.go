@@ -24,9 +24,9 @@ import (
 	"time"
 
 	"github.com/emicklei/go-restful"
-	. "github.com/opensds/multi-cloud/api/pkg/s3/datatype"
-	"github.com/opensds/multi-cloud/s3/pkg/meta/types"
-	pb "github.com/opensds/multi-cloud/s3/proto"
+	. "github.com/sodafoundation/multi-cloud/api/pkg/s3/datatype"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/meta/types"
+	pb "github.com/sodafoundation/multi-cloud/s3/proto"
 )
 
 // Refer: https://docs.aws.amazon.com/AmazonS3/latest/API/RESTCommonResponseHeaders.html

@@ -19,10 +19,10 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/opensds/multi-cloud/backend/pkg/db"
-	"github.com/opensds/multi-cloud/backend/pkg/model"
-	"github.com/opensds/multi-cloud/backend/pkg/utils/constants"
-	pb "github.com/opensds/multi-cloud/backend/proto"
+	"github.com/sodafoundation/multi-cloud/backend/pkg/db"
+	"github.com/sodafoundation/multi-cloud/backend/pkg/model"
+	"github.com/sodafoundation/multi-cloud/backend/pkg/utils/constants"
+	pb "github.com/sodafoundation/multi-cloud/backend/proto"
 	log "github.com/sirupsen/logrus"
 )
 

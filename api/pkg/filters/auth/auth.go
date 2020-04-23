@@ -18,7 +18,7 @@ import (
 	"os"
 
 	"github.com/emicklei/go-restful"
-	c "github.com/opensds/multi-cloud/api/pkg/context"
+	c "github.com/sodafoundation/multi-cloud/api/pkg/context"
 	log "github.com/sirupsen/logrus"
 )
 

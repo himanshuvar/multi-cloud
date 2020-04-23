@@ -5,8 +5,8 @@ import (
 	"sort"
 	"time"
 
-	"github.com/opensds/multi-cloud/s3/pkg/datastore/yig/meta/types"
-	mtypes "github.com/opensds/multi-cloud/s3/pkg/meta/types"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/datastore/yig/meta/types"
+	mtypes "github.com/sodafoundation/multi-cloud/s3/pkg/meta/types"
 	log "github.com/sirupsen/logrus"
 )
 

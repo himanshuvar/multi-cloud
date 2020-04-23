@@ -1,7 +1,7 @@
 package datatype
 
 import (
-	. "github.com/opensds/multi-cloud/s3/error"
+	. "github.com/sodafoundation/multi-cloud/s3/error"
 	"time"
 )
 

@@ -22,12 +22,12 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"github.com/micro/go-micro/metadata"
-	"github.com/opensds/multi-cloud/api/pkg/common"
-	"github.com/opensds/multi-cloud/dataflow/pkg/db"
-	"github.com/opensds/multi-cloud/dataflow/pkg/model"
-	"github.com/opensds/multi-cloud/dataflow/pkg/plan"
-	"github.com/opensds/multi-cloud/dataflow/pkg/scheduler/lifecycle"
-	"github.com/opensds/multi-cloud/dataflow/pkg/scheduler/trigger"
+	"github.com/sodafoundation/multi-cloud/api/pkg/common"
+	"github.com/sodafoundation/multi-cloud/dataflow/pkg/db"
+	"github.com/sodafoundation/multi-cloud/dataflow/pkg/model"
+	"github.com/sodafoundation/multi-cloud/dataflow/pkg/plan"
+	"github.com/sodafoundation/multi-cloud/dataflow/pkg/scheduler/lifecycle"
+	"github.com/sodafoundation/multi-cloud/dataflow/pkg/scheduler/trigger"
 	"github.com/robfig/cron"
 )
 

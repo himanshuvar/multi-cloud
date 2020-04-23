@@ -21,8 +21,8 @@ import (
 	"sync"
 	"time"
 
-	. "github.com/opensds/multi-cloud/s3/error"
-	"github.com/opensds/multi-cloud/s3/pkg/datastore/yig/meta/types"
+	. "github.com/sodafoundation/multi-cloud/s3/error"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/datastore/yig/meta/types"
 	log "github.com/sirupsen/logrus"
 )
 

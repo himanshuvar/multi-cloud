@@ -15,7 +15,7 @@
 package ibmcosmover
 
 import (
-	s3mover "github.com/opensds/multi-cloud/datamover/pkg/amazon/s3"
+	s3mover "github.com/sodafoundation/multi-cloud/datamover/pkg/amazon/s3"
 )
 
 type IBMCOSMover = s3mover.S3Mover

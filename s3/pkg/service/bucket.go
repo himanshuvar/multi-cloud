@@ -16,13 +16,13 @@ package service
 
 import (
 	"context"
-	"github.com/opensds/multi-cloud/s3/pkg/utils"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/utils"
 
-	"github.com/opensds/multi-cloud/api/pkg/s3"
-	. "github.com/opensds/multi-cloud/s3/error"
-	. "github.com/opensds/multi-cloud/s3/pkg/meta/types"
-	"github.com/opensds/multi-cloud/s3/pkg/meta/util"
-	pb "github.com/opensds/multi-cloud/s3/proto"
+	"github.com/sodafoundation/multi-cloud/api/pkg/s3"
+	. "github.com/sodafoundation/multi-cloud/s3/error"
+	. "github.com/sodafoundation/multi-cloud/s3/pkg/meta/types"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/meta/util"
+	pb "github.com/sodafoundation/multi-cloud/s3/proto"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -243,7 +243,7 @@ func (s *s3Service) PutBucketLifecycle(ctx context.Context, in *pb.PutBucketLife
 
 	bucket.LifecycleConfiguration = in.Lc
 	err = s.MetaStorage.Db.PutBucket(ctx, bucket)
-	/* TODO: enable cache, see https://github.com/opensds/multi-cloud/issues/698
+	/* TODO: enable cache, see https://github.com/sodafoundation/multi-cloud/issues/698
 	if err == nil {
 		s.MetaStorage.Cache.Remove(redis.BucketTable, meta.BUCKET_CACHE_PREFIX, bucketName)
 	}*/

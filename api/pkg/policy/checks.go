@@ -20,7 +20,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/opensds/multi-cloud/api/pkg/utils"
+	"github.com/sodafoundation/multi-cloud/api/pkg/utils"
 	log "github.com/sirupsen/logrus"
 )
 

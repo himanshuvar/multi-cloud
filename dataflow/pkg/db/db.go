@@ -17,9 +17,9 @@ package db
 import (
 	"context"
 	log "github.com/sirupsen/logrus"
-	"github.com/opensds/multi-cloud/dataflow/pkg/db/drivers/mongo"
-	"github.com/opensds/multi-cloud/dataflow/pkg/model"
-	. "github.com/opensds/multi-cloud/dataflow/pkg/utils"
+	"github.com/sodafoundation/multi-cloud/dataflow/pkg/db/drivers/mongo"
+	"github.com/sodafoundation/multi-cloud/dataflow/pkg/model"
+	. "github.com/sodafoundation/multi-cloud/dataflow/pkg/utils"
 )
 
 // C is a global variable that controls database module.

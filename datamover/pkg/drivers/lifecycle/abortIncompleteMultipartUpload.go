@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/micro/go-micro/metadata"
-	"github.com/opensds/multi-cloud/api/pkg/common"
-	"github.com/opensds/multi-cloud/datamover/proto"
-	osdss3 "github.com/opensds/multi-cloud/s3/proto"
+	"github.com/sodafoundation/multi-cloud/api/pkg/common"
+	"github.com/sodafoundation/multi-cloud/datamover/proto"
+	osdss3 "github.com/sodafoundation/multi-cloud/s3/proto"
 	log "github.com/sirupsen/logrus"
 )
 

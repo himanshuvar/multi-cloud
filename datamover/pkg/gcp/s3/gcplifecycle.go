@@ -18,7 +18,7 @@ import (
 	"errors"
 
 	log "github.com/sirupsen/logrus"
-	. "github.com/opensds/multi-cloud/datamover/pkg/utils"
+	. "github.com/sodafoundation/multi-cloud/datamover/pkg/utils"
 )
 
 func (mover *GcpS3Mover) ChangeStorageClass(objKey *string, newClass *string, bkend *BackendInfo) error {

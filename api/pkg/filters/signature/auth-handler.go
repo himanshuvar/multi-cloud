@@ -29,8 +29,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/opensds/multi-cloud/api/pkg/filters/signature/credentials"
-	. "github.com/opensds/multi-cloud/s3/error"
+	"github.com/sodafoundation/multi-cloud/api/pkg/filters/signature/credentials"
 )
 
 // Verify if request has AWS Signature

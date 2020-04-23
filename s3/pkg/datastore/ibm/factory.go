@@ -1,10 +1,10 @@
 package ibmcos
 
 import (
-	"github.com/opensds/multi-cloud/backend/pkg/utils/constants"
-	backendpb "github.com/opensds/multi-cloud/backend/proto"
-	"github.com/opensds/multi-cloud/s3/pkg/datastore/aws"
-	"github.com/opensds/multi-cloud/s3/pkg/datastore/driver"
+	"github.com/sodafoundation/multi-cloud/backend/pkg/utils/constants"
+	backendpb "github.com/sodafoundation/multi-cloud/backend/proto"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/datastore/aws"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/datastore/driver"
 )
 
 type IBMCOSDriverFactory struct {

@@ -4,9 +4,9 @@ import (
 	"errors"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
-	"github.com/opensds/multi-cloud/s3/pkg/helper"
-	bus "github.com/opensds/multi-cloud/s3/pkg/messagebus"
-	"github.com/opensds/multi-cloud/s3/pkg/messagebus/types"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/helper"
+	bus "github.com/sodafoundation/multi-cloud/s3/pkg/messagebus"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/messagebus/types"
 )
 
 type KafkaBuilder struct {

@@ -22,10 +22,10 @@ import (
 	"io"
 	"path/filepath"
 
-	"github.com/opensds/multi-cloud/s3/pkg/datastore/yig/config"
-	"github.com/opensds/multi-cloud/s3/pkg/datastore/yig/crypto"
-	"github.com/opensds/multi-cloud/s3/pkg/datastore/yig/meta"
-	"github.com/opensds/multi-cloud/s3/pkg/datastore/yig/utils"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/datastore/yig/config"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/datastore/yig/crypto"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/datastore/yig/meta"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/datastore/yig/utils"
 	log "github.com/sirupsen/logrus"
 )
 

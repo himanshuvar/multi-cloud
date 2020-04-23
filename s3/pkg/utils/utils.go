@@ -20,8 +20,8 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"github.com/micro/go-micro/metadata"
-	"github.com/opensds/multi-cloud/api/pkg/common"
-	"github.com/opensds/multi-cloud/backend/proto"
+	"github.com/sodafoundation/multi-cloud/api/pkg/common"
+	"github.com/sodafoundation/multi-cloud/backend/proto"
 	log "github.com/sirupsen/logrus"
 )
 

@@ -20,8 +20,8 @@ import (
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
 	log "github.com/sirupsen/logrus"
-	backend "github.com/opensds/multi-cloud/backend/pkg/model"
-	. "github.com/opensds/multi-cloud/dataflow/pkg/model"
+	backend "github.com/sodafoundation/multi-cloud/backend/pkg/model"
+	. "github.com/sodafoundation/multi-cloud/dataflow/pkg/model"
 )
 
 var adap = &adapter{}

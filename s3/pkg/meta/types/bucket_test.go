@@ -1,8 +1,8 @@
 package types
 
 import (
-	"github.com/opensds/multi-cloud/s3/pkg/helper"
-	pb "github.com/opensds/multi-cloud/s3/proto"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/helper"
+	pb "github.com/sodafoundation/multi-cloud/s3/proto"
 	. "gopkg.in/check.v1"
 )
 

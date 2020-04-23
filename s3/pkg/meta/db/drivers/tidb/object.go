@@ -22,8 +22,8 @@ import (
 	"strconv"
 	"time"
 
-	. "github.com/opensds/multi-cloud/s3/pkg/meta/types"
-	pb "github.com/opensds/multi-cloud/s3/proto"
+	. "github.com/sodafoundation/multi-cloud/s3/pkg/meta/types"
+	pb "github.com/sodafoundation/multi-cloud/s3/proto"
 	log "github.com/sirupsen/logrus"
 	"github.com/xxtea/xxtea-go/xxtea"
 )
@@ -117,7 +117,7 @@ func (t *TidbClient) PutObject(ctx context.Context, object *Object, tx interface
 	sqlTx, _ = tx.(*sql.Tx)
 	sql, args := object.GetCreateSql()
 	_, err = sqlTx.Exec(sql, args...)
-	// TODO: multi-part handle, see issue https://github.com/opensds/multi-cloud/issues/690
+	// TODO: multi-part handle, see issue https://github.com/sodafoundation/multi-cloud/issues/690
 
 	return err
 }

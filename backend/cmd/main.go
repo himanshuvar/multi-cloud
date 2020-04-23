@@ -19,11 +19,11 @@ import (
 	"os"
 
 	micro "github.com/micro/go-micro"
-	"github.com/opensds/multi-cloud/api/pkg/utils/obs"
-	"github.com/opensds/multi-cloud/backend/pkg/db"
-	handler "github.com/opensds/multi-cloud/backend/pkg/service"
-	"github.com/opensds/multi-cloud/backend/pkg/utils/config"
-	pb "github.com/opensds/multi-cloud/backend/proto"
+	"github.com/sodafoundation/multi-cloud/api/pkg/utils/obs"
+	"github.com/sodafoundation/multi-cloud/backend/pkg/db"
+	handler "github.com/sodafoundation/multi-cloud/backend/pkg/service"
+	"github.com/sodafoundation/multi-cloud/backend/pkg/utils/config"
+	pb "github.com/sodafoundation/multi-cloud/backend/proto"
 )
 
 func main() {

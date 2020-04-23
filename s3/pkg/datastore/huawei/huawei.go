@@ -21,14 +21,14 @@ import (
 
 	"encoding/base64"
 	"encoding/hex"
-	"github.com/opensds/multi-cloud/api/pkg/utils/obs"
-	backendpb "github.com/opensds/multi-cloud/backend/proto"
-	. "github.com/opensds/multi-cloud/s3/error"
-	dscommon "github.com/opensds/multi-cloud/s3/pkg/datastore/common"
-	"github.com/opensds/multi-cloud/s3/pkg/model"
-	osdss3 "github.com/opensds/multi-cloud/s3/pkg/service"
-	"github.com/opensds/multi-cloud/s3/pkg/utils"
-	pb "github.com/opensds/multi-cloud/s3/proto"
+	"github.com/sodafoundation/multi-cloud/api/pkg/utils/obs"
+	backendpb "github.com/sodafoundation/multi-cloud/backend/proto"
+	. "github.com/sodafoundation/multi-cloud/s3/error"
+	dscommon "github.com/sodafoundation/multi-cloud/s3/pkg/datastore/common"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/model"
+	osdss3 "github.com/sodafoundation/multi-cloud/s3/pkg/service"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/utils"
+	pb "github.com/sodafoundation/multi-cloud/s3/proto"
 	log "github.com/sirupsen/logrus"
 )
 

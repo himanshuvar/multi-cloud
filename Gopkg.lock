@@ -301,7 +301,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:cdb5ce76cd7af19e3d2d5ba9b6458a2ee804f0d376711215dd3df5f51100d423"
+  digest = "1:d0848e4ad994d76a989069e9dc4faeb8eee082c9d7c93aac3df960442d6a508a"
   name = "github.com/hashicorp/go-rootcerts"
   packages = ["."]
   pruneopts = "NUT"
@@ -690,7 +690,7 @@
   version = "v1.3.0"
 
 [[projects]]
-  digest = "1:498d0b37a5c7f5664f2e21de8c85c5694ed197cb25ce245bf25cdd18930035e9"
+  digest = "1:371c5253208c059801b1d4b0b96a3dcb258aecb87c22476cdf8cc2b540a4b5a9"
   name = "github.com/ugorji/go"
   packages = ["codec"]
   pruneopts = "NUT"

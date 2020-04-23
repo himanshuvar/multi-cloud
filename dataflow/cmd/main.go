@@ -17,11 +17,11 @@ package main
 import (
 	log "github.com/sirupsen/logrus"
 	"github.com/micro/go-micro"
-	handler "github.com/opensds/multi-cloud/dataflow/pkg"
-	"github.com/opensds/multi-cloud/dataflow/pkg/scheduler"
-	_ "github.com/opensds/multi-cloud/dataflow/pkg/scheduler/trigger/crontrigger"
-	pb "github.com/opensds/multi-cloud/dataflow/proto"
-	"github.com/opensds/multi-cloud/api/pkg/utils/obs"
+	handler "github.com/sodafoundation/multi-cloud/dataflow/pkg"
+	"github.com/sodafoundation/multi-cloud/dataflow/pkg/scheduler"
+	_ "github.com/sodafoundation/multi-cloud/dataflow/pkg/scheduler/trigger/crontrigger"
+	pb "github.com/sodafoundation/multi-cloud/dataflow/proto"
+	"github.com/sodafoundation/multi-cloud/api/pkg/utils/obs"
 )
 
 func main() {

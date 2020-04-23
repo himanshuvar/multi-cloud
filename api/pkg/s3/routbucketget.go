@@ -16,8 +16,8 @@ package s3
 
 import (
 	"github.com/emicklei/go-restful"
-	"github.com/opensds/multi-cloud/api/pkg/policy"
-	. "github.com/opensds/multi-cloud/s3/error"
+	"github.com/sodafoundation/multi-cloud/api/pkg/policy"
+	. "github.com/sodafoundation/multi-cloud/s3/error"
 )
 
 func (s *APIService) RouteBucketGet(request *restful.Request, response *restful.Response) {

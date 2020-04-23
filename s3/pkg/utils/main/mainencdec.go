@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/opensds/multi-cloud/s3/pkg/utils"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/utils"
 	"io/ioutil"
 	"math/rand"
 )

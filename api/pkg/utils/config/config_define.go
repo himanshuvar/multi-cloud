@@ -22,7 +22,7 @@ type OsdsLet struct {
 	SocketOrder  string `conf:"socket_order"`
 	AuthStrategy string `conf:"auth_strategy,noauth"`
 	Daemon       bool   `conf:"daemon,false"`
-	PolicyPath   string `conf:"policy_path,/etc/opensds/policy.json"`
+	PolicyPath   string `conf:"policy_path,/etc/sodafoundation/policy.json"`
 }
 
 type OsdsDock struct {

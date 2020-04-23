@@ -23,7 +23,7 @@ import (
 	"time"
 
 	vault "github.com/hashicorp/vault/api"
-	"github.com/opensds/multi-cloud/s3/pkg/helper"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/helper"
 	log "github.com/sirupsen/logrus"
 )
 

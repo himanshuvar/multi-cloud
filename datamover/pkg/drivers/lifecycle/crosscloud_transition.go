@@ -22,12 +22,12 @@ import (
 
 	"github.com/micro/go-micro/client"
 	"github.com/micro/go-micro/metadata"
-	"github.com/opensds/multi-cloud/api/pkg/common"
-	"github.com/opensds/multi-cloud/datamover/pkg/drivers/https"
-	. "github.com/opensds/multi-cloud/datamover/pkg/utils"
-	"github.com/opensds/multi-cloud/datamover/proto"
-	"github.com/opensds/multi-cloud/s3/pkg/utils"
-	osdss3 "github.com/opensds/multi-cloud/s3/proto"
+	"github.com/sodafoundation/multi-cloud/api/pkg/common"
+	"github.com/sodafoundation/multi-cloud/datamover/pkg/drivers/https"
+	. "github.com/sodafoundation/multi-cloud/datamover/pkg/utils"
+	"github.com/sodafoundation/multi-cloud/datamover/proto"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/utils"
+	osdss3 "github.com/sodafoundation/multi-cloud/s3/proto"
 	log "github.com/sirupsen/logrus"
 )
 

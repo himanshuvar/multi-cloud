@@ -3,10 +3,10 @@ package tests
 import (
 	"fmt"
 
-	"github.com/opensds/multi-cloud/s3/pkg/helper"
-	bus "github.com/opensds/multi-cloud/s3/pkg/messagebus"
-	_ "github.com/opensds/multi-cloud/s3/pkg/messagebus/kafka"
-	"github.com/opensds/multi-cloud/s3/pkg/messagebus/types"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/helper"
+	bus "github.com/sodafoundation/multi-cloud/s3/pkg/messagebus"
+	_ "github.com/sodafoundation/multi-cloud/s3/pkg/messagebus/kafka"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/messagebus/types"
 	. "gopkg.in/check.v1"
 )
 

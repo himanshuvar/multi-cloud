@@ -17,9 +17,9 @@ package db
 import (
 	"context"
 	"fmt"
-	"github.com/opensds/multi-cloud/backend/pkg/db/drivers/mongo"
-	"github.com/opensds/multi-cloud/backend/pkg/model"
-	"github.com/opensds/multi-cloud/backend/pkg/utils/config"
+	"github.com/sodafoundation/multi-cloud/backend/pkg/db/drivers/mongo"
+	"github.com/sodafoundation/multi-cloud/backend/pkg/model"
+	"github.com/sodafoundation/multi-cloud/backend/pkg/utils/config"
 )
 
 type Repository interface {

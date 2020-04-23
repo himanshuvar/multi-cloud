@@ -21,8 +21,8 @@ import (
 	"strings"
 	"time"
 
-	. "github.com/opensds/multi-cloud/s3/error"
-	pb "github.com/opensds/multi-cloud/s3/proto"
+	. "github.com/sodafoundation/multi-cloud/s3/error"
+	pb "github.com/sodafoundation/multi-cloud/s3/proto"
 )
 
 // Validates the preconditions for CopyObject, returns nil if validates

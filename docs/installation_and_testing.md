@@ -48,8 +48,8 @@ docker-compose version 1.22.0, build 1719ceb
 ###	Install and start OpenSDS Multi-cloud Server
 Download the source code:
 ```bash
-mkdir -p /root/gopath/src/github.com/opensds/
-git clone https://github.com/opensds/multi-cloud.git
+mkdir -p /root/gopath/src/github.com/sodafoundation/
+git clone https://github.com/sodafoundation/multi-cloud.git
 cd multi-cloud
 ```
 

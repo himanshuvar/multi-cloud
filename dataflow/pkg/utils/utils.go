@@ -19,7 +19,7 @@ import (
 	"errors"
 	"github.com/micro/go-log"
 	"github.com/micro/go-micro/metadata"
-	"github.com/opensds/multi-cloud/api/pkg/common"
+	"github.com/sodafoundation/multi-cloud/api/pkg/common"
 )
 
 const (

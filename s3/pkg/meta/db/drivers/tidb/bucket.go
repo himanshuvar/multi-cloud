@@ -22,12 +22,12 @@ import (
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/opensds/multi-cloud/api/pkg/common"
-	. "github.com/opensds/multi-cloud/s3/error"
-	. "github.com/opensds/multi-cloud/s3/pkg/meta/types"
-	"github.com/opensds/multi-cloud/s3/pkg/meta/util"
-	"github.com/opensds/multi-cloud/s3/pkg/utils"
-	pb "github.com/opensds/multi-cloud/s3/proto"
+	"github.com/sodafoundation/multi-cloud/api/pkg/common"
+	. "github.com/sodafoundation/multi-cloud/s3/error"
+	. "github.com/sodafoundation/multi-cloud/s3/pkg/meta/types"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/meta/util"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/utils"
+	pb "github.com/sodafoundation/multi-cloud/s3/proto"
 	log "github.com/sirupsen/logrus"
 )
 

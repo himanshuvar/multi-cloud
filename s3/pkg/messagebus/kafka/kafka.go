@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
-	"github.com/opensds/multi-cloud/s3/pkg/helper"
-	"github.com/opensds/multi-cloud/s3/pkg/messagebus/types"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/helper"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/messagebus/types"
 )
 
 type Kafka struct {

@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/opensds/multi-cloud/api/pkg/s3/datatype"
-	"github.com/opensds/multi-cloud/s3/proto"
+	"github.com/sodafoundation/multi-cloud/api/pkg/s3/datatype"
+	"github.com/sodafoundation/multi-cloud/s3/proto"
 	"github.com/xxtea/xxtea-go/xxtea"
 )
 

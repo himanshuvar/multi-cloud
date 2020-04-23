@@ -18,8 +18,8 @@ import (
 	"context"
 
 	"github.com/globalsign/mgo/bson"
-	. "github.com/opensds/multi-cloud/s3/pkg/exception"
-	pb "github.com/opensds/multi-cloud/s3/proto"
+	. "github.com/sodafoundation/multi-cloud/s3/pkg/exception"
+	pb "github.com/sodafoundation/multi-cloud/s3/proto"
 	log "github.com/sirupsen/logrus"
 )
 

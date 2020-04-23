@@ -4,9 +4,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/opensds/multi-cloud/s3/pkg/helper"
-	"github.com/opensds/multi-cloud/s3/pkg/log"
-	bus "github.com/opensds/multi-cloud/s3/pkg/messagebus"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/helper"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/log"
+	bus "github.com/sodafoundation/multi-cloud/s3/pkg/messagebus"
 	. "gopkg.in/check.v1"
 )
 

@@ -19,9 +19,9 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/opensds/multi-cloud/api/pkg/filters/signature/credentials/keystonecredentials"
-	th "github.com/opensds/multi-cloud/testhelper"
-	"github.com/opensds/multi-cloud/testhelper/gophercloudclient"
+	"github.com/sodafoundation/multi-cloud/api/pkg/filters/signature/credentials/keystonecredentials"
+	th "github.com/sodafoundation/multi-cloud/testhelper"
+	"github.com/sodafoundation/multi-cloud/testhelper/gophercloudclient"
 )
 
 const ListOutput = `

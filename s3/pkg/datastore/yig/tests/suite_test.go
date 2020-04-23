@@ -3,8 +3,8 @@ package tests
 import (
 	"testing"
 
-	_ "github.com/opensds/multi-cloud/s3/pkg/datastore"
-	"github.com/opensds/multi-cloud/s3/pkg/datastore/driver"
+	_ "github.com/sodafoundation/multi-cloud/s3/pkg/datastore"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/datastore/driver"
 	. "gopkg.in/check.v1"
 )
 

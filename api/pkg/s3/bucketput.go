@@ -20,13 +20,13 @@ import (
 	"time"
 
 	"github.com/emicklei/go-restful"
-	"github.com/opensds/multi-cloud/api/pkg/common"
-	c "github.com/opensds/multi-cloud/api/pkg/context"
-	"github.com/opensds/multi-cloud/s3/error"
-	"github.com/opensds/multi-cloud/s3/pkg/model"
-	"github.com/opensds/multi-cloud/s3/pkg/utils"
-	"github.com/opensds/multi-cloud/s3/proto"
-	pb "github.com/opensds/multi-cloud/s3/proto"
+	"github.com/sodafoundation/multi-cloud/api/pkg/common"
+	c "github.com/sodafoundation/multi-cloud/api/pkg/context"
+	"github.com/sodafoundation/multi-cloud/s3/error"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/model"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/utils"
+	"github.com/sodafoundation/multi-cloud/s3/proto"
+	pb "github.com/sodafoundation/multi-cloud/s3/proto"
 	log "github.com/sirupsen/logrus"
 )
 

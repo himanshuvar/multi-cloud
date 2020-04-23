@@ -18,8 +18,8 @@ import (
 	"regexp"
 
 	"github.com/emicklei/go-restful"
-	"github.com/opensds/multi-cloud/api/pkg/common"
-	"github.com/opensds/multi-cloud/api/pkg/policy"
+	"github.com/sodafoundation/multi-cloud/api/pkg/common"
+	"github.com/sodafoundation/multi-cloud/api/pkg/policy"
 )
 
 func (s *APIService) RouteObjectPost(request *restful.Request, response *restful.Response) {

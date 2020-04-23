@@ -19,9 +19,9 @@ import (
 	"strings"
 
 	log "github.com/sirupsen/logrus"
-	"github.com/opensds/multi-cloud/dataflow/pkg/utils"
-	"github.com/opensds/multi-cloud/datamover/pkg/db"
-	"github.com/opensds/multi-cloud/datamover/pkg/kafka"
+	"github.com/sodafoundation/multi-cloud/dataflow/pkg/utils"
+	"github.com/sodafoundation/multi-cloud/datamover/pkg/db"
+	"github.com/sodafoundation/multi-cloud/datamover/pkg/kafka"
 )
 
 var dataMoverGroup = "datamover"

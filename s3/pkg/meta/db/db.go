@@ -16,9 +16,9 @@ package db
 import (
 	"context"
 
-	. "github.com/opensds/multi-cloud/s3/pkg/meta/types"
-	"github.com/opensds/multi-cloud/s3/pkg/utils"
-	pb "github.com/opensds/multi-cloud/s3/proto"
+	. "github.com/sodafoundation/multi-cloud/s3/pkg/meta/types"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/utils"
+	pb "github.com/sodafoundation/multi-cloud/s3/proto"
 )
 
 //DB Adapter Interface

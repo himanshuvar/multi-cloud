@@ -17,7 +17,7 @@ package tests
 import (
 	"sync"
 
-	"github.com/opensds/multi-cloud/s3/pkg/datastore/yig/utils"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/datastore/yig/utils"
 	. "gopkg.in/check.v1"
 )
 

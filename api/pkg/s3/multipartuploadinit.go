@@ -16,11 +16,11 @@ package s3
 
 import (
 	"github.com/emicklei/go-restful"
-	"github.com/opensds/multi-cloud/api/pkg/common"
-	pb "github.com/opensds/multi-cloud/s3/proto"
+	"github.com/sodafoundation/multi-cloud/api/pkg/common"
+	pb "github.com/sodafoundation/multi-cloud/s3/proto"
 	log "github.com/sirupsen/logrus"
 
-	. "github.com/opensds/multi-cloud/s3/error"
+	. "github.com/sodafoundation/multi-cloud/s3/error"
 )
 
 func (s *APIService) MultiPartUploadInit(request *restful.Request, response *restful.Response) {

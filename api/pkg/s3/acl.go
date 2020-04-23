@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/emicklei/go-restful"
-	"github.com/opensds/multi-cloud/api/pkg/common"
-	. "github.com/opensds/multi-cloud/api/pkg/s3/datatype"
+	"github.com/sodafoundation/multi-cloud/api/pkg/common"
+	. "github.com/sodafoundation/multi-cloud/api/pkg/s3/datatype"
 )
 
 func getAclFromHeader(request *restful.Request) (acl Acl, err error) {

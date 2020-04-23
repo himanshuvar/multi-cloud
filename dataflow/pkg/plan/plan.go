@@ -23,14 +23,14 @@ import (
 
 	"github.com/globalsign/mgo/bson"
 	log "github.com/sirupsen/logrus"
-	//c "github.com/opensds/multi-cloud/api/pkg/context"
+	//c "github.com/sodafoundation/multi-cloud/api/pkg/context"
 	"github.com/micro/go-micro/metadata"
-	"github.com/opensds/multi-cloud/api/pkg/common"
-	"github.com/opensds/multi-cloud/dataflow/pkg/db"
-	"github.com/opensds/multi-cloud/dataflow/pkg/kafka"
-	. "github.com/opensds/multi-cloud/dataflow/pkg/model"
-	"github.com/opensds/multi-cloud/dataflow/pkg/scheduler/trigger"
-	"github.com/opensds/multi-cloud/datamover/proto"
+	"github.com/sodafoundation/multi-cloud/api/pkg/common"
+	"github.com/sodafoundation/multi-cloud/dataflow/pkg/db"
+	"github.com/sodafoundation/multi-cloud/dataflow/pkg/kafka"
+	. "github.com/sodafoundation/multi-cloud/dataflow/pkg/model"
+	"github.com/sodafoundation/multi-cloud/dataflow/pkg/scheduler/trigger"
+	"github.com/sodafoundation/multi-cloud/datamover/proto"
 )
 
 var tblConnector = "connector"

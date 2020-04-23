@@ -27,7 +27,7 @@ import (
 	"strings"
 	"time"
 
-	. "github.com/opensds/multi-cloud/s3/error"
+	. "github.com/sodafoundation/multi-cloud/s3/error"
 	log "github.com/sirupsen/logrus"
 )
 

@@ -6,15 +6,15 @@ import (
 	"time"
 
 	"github.com/micro/go-micro/client"
-	bkd "github.com/opensds/multi-cloud/backend/proto"
-	"github.com/opensds/multi-cloud/s3/pkg/meta/types"
+	bkd "github.com/sodafoundation/multi-cloud/backend/proto"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/meta/types"
 
 	"github.com/micro/go-micro/metadata"
-	"github.com/opensds/multi-cloud/api/pkg/common"
-	"github.com/opensds/multi-cloud/s3/pkg/datastore/driver"
-	"github.com/opensds/multi-cloud/s3/pkg/meta"
-	"github.com/opensds/multi-cloud/s3/pkg/utils"
-	pb "github.com/opensds/multi-cloud/s3/proto"
+	"github.com/sodafoundation/multi-cloud/api/pkg/common"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/datastore/driver"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/meta"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/utils"
+	pb "github.com/sodafoundation/multi-cloud/s3/proto"
 	log "github.com/sirupsen/logrus"
 )
 

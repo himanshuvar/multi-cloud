@@ -21,12 +21,12 @@ import (
 
 	"github.com/emicklei/go-restful"
 	"github.com/micro/go-micro/client"
-	"github.com/opensds/multi-cloud/api/pkg/common"
-	apiutils "github.com/opensds/multi-cloud/api/pkg/utils"
-	. "github.com/opensds/multi-cloud/s3/error"
-	"github.com/opensds/multi-cloud/s3/pkg/meta/types"
-	"github.com/opensds/multi-cloud/s3/pkg/utils"
-	pb "github.com/opensds/multi-cloud/s3/proto"
+	"github.com/sodafoundation/multi-cloud/api/pkg/common"
+	apiutils "github.com/sodafoundation/multi-cloud/api/pkg/utils"
+	. "github.com/sodafoundation/multi-cloud/s3/error"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/meta/types"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/utils"
+	pb "github.com/sodafoundation/multi-cloud/s3/proto"
 	log "github.com/sirupsen/logrus"
 )
 

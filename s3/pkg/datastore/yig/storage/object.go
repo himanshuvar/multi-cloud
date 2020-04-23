@@ -10,10 +10,10 @@ import (
 	"math/rand"
 	"time"
 
-	. "github.com/opensds/multi-cloud/s3/error"
-	dscommon "github.com/opensds/multi-cloud/s3/pkg/datastore/common"
-	"github.com/opensds/multi-cloud/s3/pkg/datastore/yig/meta/types"
-	pb "github.com/opensds/multi-cloud/s3/proto"
+	. "github.com/sodafoundation/multi-cloud/s3/error"
+	dscommon "github.com/sodafoundation/multi-cloud/s3/pkg/datastore/common"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/datastore/yig/meta/types"
+	pb "github.com/sodafoundation/multi-cloud/s3/proto"
 	log "github.com/sirupsen/logrus"
 )
 

@@ -17,10 +17,10 @@ package lifecycle
 import (
 	"encoding/json"
 	"github.com/micro/go-micro/client"
-	"github.com/opensds/multi-cloud/backend/proto"
-	"github.com/opensds/multi-cloud/dataflow/pkg/utils"
-	"github.com/opensds/multi-cloud/datamover/proto"
-	osdss3 "github.com/opensds/multi-cloud/s3/proto"
+	"github.com/sodafoundation/multi-cloud/backend/proto"
+	"github.com/sodafoundation/multi-cloud/dataflow/pkg/utils"
+	"github.com/sodafoundation/multi-cloud/datamover/proto"
+	osdss3 "github.com/sodafoundation/multi-cloud/s3/proto"
 	log "github.com/sirupsen/logrus"
 	"sync"
 )

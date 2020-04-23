@@ -18,7 +18,7 @@ import (
 	"errors"
 
 	"github.com/emicklei/go-restful"
-	"github.com/opensds/multi-cloud/api/pkg/policy"
+	"github.com/sodafoundation/multi-cloud/api/pkg/policy"
 	"net/http"
 )
 

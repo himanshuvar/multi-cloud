@@ -4,9 +4,9 @@ import (
 	"context"
 	"io"
 
-	dscommon "github.com/opensds/multi-cloud/s3/pkg/datastore/common"
-	"github.com/opensds/multi-cloud/s3/pkg/model"
-	pb "github.com/opensds/multi-cloud/s3/proto"
+	dscommon "github.com/sodafoundation/multi-cloud/s3/pkg/datastore/common"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/model"
+	pb "github.com/sodafoundation/multi-cloud/s3/proto"
 )
 
 // define the common driver interface for io.

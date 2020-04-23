@@ -24,8 +24,8 @@ import (
 	"github.com/globalsign/mgo/bson"
 	log "github.com/sirupsen/logrus"
 	"github.com/micro/go-micro/metadata"
-	"github.com/opensds/multi-cloud/api/pkg/common"
-	. "github.com/opensds/multi-cloud/dataflow/pkg/model"
+	"github.com/sodafoundation/multi-cloud/api/pkg/common"
+	. "github.com/sodafoundation/multi-cloud/dataflow/pkg/model"
 )
 
 var adap = &adapter{}

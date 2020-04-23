@@ -296,7 +296,7 @@ func TestOpensdsConfig(t *testing.T) {
 	if CONF.Ceph.DriverName != "ceph" {
 		t.Error("Test Ceph.DriverName error")
 	}
-	if CONF.Ceph.ConfigPath != "/etc/opensds/driver/ceph.yaml" {
+	if CONF.Ceph.ConfigPath != "/etc/sodafoundation/driver/ceph.yaml" {
 		t.Error("Test Ceph.ConfigPath error")
 	}
 	if CONF.Cinder.Name != "cinder" {
@@ -308,7 +308,7 @@ func TestOpensdsConfig(t *testing.T) {
 	if CONF.Cinder.DriverName != "cinder" {
 		t.Error("Test Cinder.DriverName error")
 	}
-	if CONF.Cinder.ConfigPath != "/etc/opensds/driver/cinder.yaml" {
+	if CONF.Cinder.ConfigPath != "/etc/sodafoundation/driver/cinder.yaml" {
 		t.Error("Test Cinder.ConfigPath error")
 	}
 	if CONF.Sample.Name != "sample" {
@@ -320,7 +320,7 @@ func TestOpensdsConfig(t *testing.T) {
 	if CONF.Sample.DriverName != "sample" {
 		t.Error("Test Sample.DriverName error")
 	}
-	if CONF.Sample.ConfigPath != "/etc/opensds/driver/sample.yaml" {
+	if CONF.Sample.ConfigPath != "/etc/sodafoundation/driver/sample.yaml" {
 		t.Error("Test Sample.ConfigPath error")
 	}
 	if CONF.LVM.Name != "lvm" {
@@ -332,7 +332,7 @@ func TestOpensdsConfig(t *testing.T) {
 	if CONF.LVM.DriverName != "lvm" {
 		t.Error("Test LVM.DriverName error")
 	}
-	if CONF.LVM.ConfigPath != "/etc/opensds/driver/lvm.yaml" {
+	if CONF.LVM.ConfigPath != "/etc/sodafoundation/driver/lvm.yaml" {
 		t.Error("Test LVM.ConfigPath error")
 	}
 	bm := GetBackendsMap()

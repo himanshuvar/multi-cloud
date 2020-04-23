@@ -2,7 +2,7 @@ package tidbclient
 
 import (
 	"database/sql"
-	. "github.com/opensds/multi-cloud/s3/pkg/meta/types"
+	. "github.com/sodafoundation/multi-cloud/s3/pkg/meta/types"
 	"strconv"
 )
 

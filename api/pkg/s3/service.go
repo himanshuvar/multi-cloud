@@ -22,10 +22,10 @@ import (
 
 	"github.com/emicklei/go-restful"
 	"github.com/micro/go-micro/client"
-	"github.com/opensds/multi-cloud/backend/proto"
-	backendpb "github.com/opensds/multi-cloud/backend/proto"
-	. "github.com/opensds/multi-cloud/s3/error"
-	"github.com/opensds/multi-cloud/s3/proto"
+	"github.com/sodafoundation/multi-cloud/backend/proto"
+	backendpb "github.com/sodafoundation/multi-cloud/backend/proto"
+	. "github.com/sodafoundation/multi-cloud/s3/error"
+	"github.com/sodafoundation/multi-cloud/s3/proto"
 	log "github.com/sirupsen/logrus"
 )
 

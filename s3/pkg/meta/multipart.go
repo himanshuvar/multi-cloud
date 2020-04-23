@@ -16,7 +16,7 @@ package meta
 import (
 	"context"
 
-	. "github.com/opensds/multi-cloud/s3/pkg/meta/types"
+	. "github.com/sodafoundation/multi-cloud/s3/pkg/meta/types"
 )
 
 func (m *Meta) GetMultipart(bucketName, objectName, uploadId string) (Multipart, error) {
@@ -38,7 +38,7 @@ func (m *Meta) DeleteMultipart(ctx context.Context, multipart Multipart) (err er
 	// TODO: usage need to be updated for charging, it depends on redis, and the mechanism is:
 	// 1. Update usage in redis when each delete happens.
 	// 2. Update usage in database periodically based on redis.
-	// see https://github.com/opensds/multi-cloud/issues/698 for redis related issue.
+	// see https://github.com/sodafoundation/multi-cloud/issues/698 for redis related issue.
 
 	err = m.Db.CommitTrans(tx)
 	return

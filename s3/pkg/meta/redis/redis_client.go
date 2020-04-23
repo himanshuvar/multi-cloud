@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/go-redis/redis"
-	"github.com/opensds/multi-cloud/s3/pkg/datastore/yig/config"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/datastore/yig/config"
 	log "github.com/sirupsen/logrus"
 )
 

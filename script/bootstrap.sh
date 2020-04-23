@@ -28,7 +28,7 @@ HOST_IP=${HOST_IP:-}
 
 # Log file
 LOG_DIR=/var/log/opensds
-LOGFILE=${LOGFILE:-/var/log/opensds/multi-cloud-bootstrap.log}
+LOGFILE=${LOGFILE:-/var/log/sodafoundation/multi-cloud-bootstrap.log}
 mkdir -p $LOG_DIR
 
 # Log function
@@ -153,13 +153,13 @@ function install_multicloud() {
     source /etc/profile
     GOPATH=${GOPATH:-$HOME/gopath}
     local opensds_root=${GOPATH}/src/github.com/opensds
-    local multicloud_root=${GOPATH}/src/github.com/opensds/multi-cloud
+    local multicloud_root=${GOPATH}/src/github.com/sodafoundation/multi-cloud
     mkdir -p ${opensds_root}
 
     cd ${opensds_root}
     if [ ! -d ${multicloud_root} ]; then
         log "Downloading the MultiCloud source code..."
-        git clone https://github.com/opensds/multi-cloud.git
+        git clone https://github.com/sodafoundation/multi-cloud.git
     fi
 
     if [[ -z "$(which make)" ]]; then

@@ -3,8 +3,8 @@ package storage
 import (
 	"io"
 
-	s3err "github.com/opensds/multi-cloud/s3/error"
-	"github.com/opensds/multi-cloud/s3/pkg/datastore/yig/meta/types"
+	s3err "github.com/sodafoundation/multi-cloud/s3/error"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/datastore/yig/meta/types"
 	log "github.com/sirupsen/logrus"
 )
 

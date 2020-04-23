@@ -20,8 +20,8 @@ import (
 	"strconv"
 	"time"
 
-	. "github.com/opensds/multi-cloud/s3/pkg/meta/types"
-	pb "github.com/opensds/multi-cloud/s3/proto"
+	. "github.com/sodafoundation/multi-cloud/s3/pkg/meta/types"
+	pb "github.com/sodafoundation/multi-cloud/s3/proto"
 	log "github.com/sirupsen/logrus"
 )
 

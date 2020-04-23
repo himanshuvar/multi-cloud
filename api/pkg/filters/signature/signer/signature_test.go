@@ -18,8 +18,8 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/opensds/multi-cloud/api/pkg/filters/signature/credentials"
-	"github.com/opensds/multi-cloud/api/pkg/filters/signature/signer"
+	"github.com/sodafoundation/multi-cloud/api/pkg/filters/signature/credentials"
+	"github.com/sodafoundation/multi-cloud/api/pkg/filters/signature/signer"
 )
 
 const authorizationStr = "OPENSDS-HMAC-SHA256 Credential=access_key/20190301/us-east-1/s3/sign_request,SignedHeaders=authorization;host;x-auth-date,Signature=472f0a1b7815974847620da53fcdd2fdd53203b5d8d08e7ce81943b260560e26"

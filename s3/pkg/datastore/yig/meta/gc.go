@@ -14,7 +14,7 @@
 package meta
 
 import (
-	"github.com/opensds/multi-cloud/s3/pkg/datastore/yig/meta/types"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/datastore/yig/meta/types"
 )
 
 // delete multipart uploaded part objects and put them into gc

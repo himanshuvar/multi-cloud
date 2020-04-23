@@ -19,10 +19,10 @@ import (
 	"strings"
 	"time"
 
-	. "github.com/opensds/multi-cloud/s3/error"
-	"github.com/opensds/multi-cloud/s3/pkg/helper"
-	. "github.com/opensds/multi-cloud/s3/pkg/meta/types"
-	pb "github.com/opensds/multi-cloud/s3/proto"
+	. "github.com/sodafoundation/multi-cloud/s3/error"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/helper"
+	. "github.com/sodafoundation/multi-cloud/s3/pkg/meta/types"
+	pb "github.com/sodafoundation/multi-cloud/s3/proto"
 	log "github.com/sirupsen/logrus"
 )
 

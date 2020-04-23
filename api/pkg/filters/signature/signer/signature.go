@@ -25,11 +25,11 @@ import (
 	"strings"
 
 	"github.com/emicklei/go-restful"
-	c "github.com/opensds/multi-cloud/api/pkg/context"
-	. "github.com/opensds/multi-cloud/api/pkg/filters/signature"
-	"github.com/opensds/multi-cloud/api/pkg/filters/signature/credentials"
-	"github.com/opensds/multi-cloud/api/pkg/s3"
-	"github.com/opensds/multi-cloud/s3/error"
+	c "github.com/sodafoundation/multi-cloud/api/pkg/context"
+	. "github.com/sodafoundation/multi-cloud/api/pkg/filters/signature"
+	"github.com/sodafoundation/multi-cloud/api/pkg/filters/signature/credentials"
+	"github.com/sodafoundation/multi-cloud/api/pkg/s3"
+	"github.com/sodafoundation/multi-cloud/s3/error"
 	log "github.com/sirupsen/logrus"
 )
 

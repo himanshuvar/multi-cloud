@@ -8,10 +8,10 @@ import (
 	"strconv"
 	"time"
 
-	flowtype "github.com/opensds/multi-cloud/dataflow/pkg/model"
-	. "github.com/opensds/multi-cloud/datamover/pkg/utils"
-	pb "github.com/opensds/multi-cloud/datamover/proto"
-	osdss3 "github.com/opensds/multi-cloud/s3/proto"
+	flowtype "github.com/sodafoundation/multi-cloud/dataflow/pkg/model"
+	. "github.com/sodafoundation/multi-cloud/datamover/pkg/utils"
+	pb "github.com/sodafoundation/multi-cloud/datamover/proto"
+	osdss3 "github.com/sodafoundation/multi-cloud/s3/proto"
 	log "github.com/sirupsen/logrus"
 )
 

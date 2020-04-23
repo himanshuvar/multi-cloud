@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/opensds/multi-cloud/s3/pkg/datastore/yig/config"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/datastore/yig/config"
 )
 
 var (

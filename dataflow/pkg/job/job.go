@@ -17,8 +17,8 @@ package job
 import (
 	"context"
 	log "github.com/sirupsen/logrus"
-	"github.com/opensds/multi-cloud/dataflow/pkg/db"
-	. "github.com/opensds/multi-cloud/dataflow/pkg/model"
+	"github.com/sodafoundation/multi-cloud/dataflow/pkg/db"
+	. "github.com/sodafoundation/multi-cloud/dataflow/pkg/model"
 )
 
 func Create(ctx context.Context, job *Job) (*Job, error) {

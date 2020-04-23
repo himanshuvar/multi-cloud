@@ -3,8 +3,8 @@ package meta
 import (
 	"errors"
 
-	"github.com/opensds/multi-cloud/s3/pkg/helper"
-	"github.com/opensds/multi-cloud/s3/pkg/meta/redis"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/helper"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/meta/redis"
 	log "github.com/sirupsen/logrus"
 )
 

@@ -26,8 +26,8 @@ import (
 
 	"github.com/Azure/azure-storage-blob-go/azblob"
 	log "github.com/sirupsen/logrus"
-	. "github.com/opensds/multi-cloud/datamover/pkg/utils"
-	pb "github.com/opensds/multi-cloud/datamover/proto"
+	. "github.com/sodafoundation/multi-cloud/datamover/pkg/utils"
+	pb "github.com/sodafoundation/multi-cloud/datamover/proto"
 )
 
 var (

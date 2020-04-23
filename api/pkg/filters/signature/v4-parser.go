@@ -23,8 +23,8 @@ import (
 	"strings"
 	"time"
 
-	. "github.com/opensds/multi-cloud/api/pkg/s3/datatype"
-	. "github.com/opensds/multi-cloud/s3/error"
+	. "github.com/sodafoundation/multi-cloud/api/pkg/s3/datatype"
+	. "github.com/sodafoundation/multi-cloud/s3/error"
 )
 
 // credentialHeader data type represents structured form of Credential

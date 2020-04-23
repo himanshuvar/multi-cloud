@@ -20,7 +20,7 @@ import (
 
 	"github.com/Azure/azure-storage-blob-go/azblob"
 	log "github.com/sirupsen/logrus"
-	. "github.com/opensds/multi-cloud/datamover/pkg/utils"
+	. "github.com/sodafoundation/multi-cloud/datamover/pkg/utils"
 )
 
 func (mover *BlobMover) setTier(objKey *string, newClass *string) error {

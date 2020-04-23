@@ -16,11 +16,11 @@ package meta
 import (
 	"context"
 
-	. "github.com/opensds/multi-cloud/s3/error"
-	"github.com/opensds/multi-cloud/s3/pkg/helper"
-	"github.com/opensds/multi-cloud/s3/pkg/meta/db/drivers/tidb"
-	"github.com/opensds/multi-cloud/s3/pkg/meta/redis"
-	. "github.com/opensds/multi-cloud/s3/pkg/meta/types"
+	. "github.com/sodafoundation/multi-cloud/s3/error"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/helper"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/meta/db/drivers/tidb"
+	"github.com/sodafoundation/multi-cloud/s3/pkg/meta/redis"
+	. "github.com/sodafoundation/multi-cloud/s3/pkg/meta/types"
 	log "github.com/sirupsen/logrus"
 	"strconv"
 )
@@ -109,7 +109,7 @@ func (m *Meta) PutObject(ctx context.Context, object, deleteObj *Object, multipa
 	// TODO: usage need to be updated for charging, and it depends on redis, and the mechanism is:
 	// 1. Update usage in redis when each put happens.
 	// 2. Update usage in database periodically based on redis.
-	// see https://github.com/opensds/multi-cloud/issues/698 for redis related issue.
+	// see https://github.com/sodafoundation/multi-cloud/issues/698 for redis related issue.
 
 	err = m.Db.CommitTrans(tx)
 	return nil
@@ -136,7 +136,7 @@ func (m *Meta) DeleteObject(ctx context.Context, object *Object) error {
 	// TODO: usage need to be updated for charging, it depends on redis, and the mechanism is:
 	// 1. Update usage in redis when each delete happens.
 	// 2. Update usage in database periodically based on redis.
-	// see https://github.com/opensds/multi-cloud/issues/698 for redis related issue.
+	// see https://github.com/sodafoundation/multi-cloud/issues/698 for redis related issue.
 
 	err = m.Db.CommitTrans(tx)
 
