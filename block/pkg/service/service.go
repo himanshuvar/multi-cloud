@@ -15,15 +15,15 @@
 package service
 
 import (
-	"os"
+	"context"
+	"errors"
+	"fmt"
 	_ "strings"
 
-	"github.com/micro/go-micro/client"
+	"github.com/micro/go-micro/v2/client"
 	backend "github.com/opensds/multi-cloud/backend/proto"
-	_ "github.com/opensds/multi-cloud/block/pkg/datastore/aws"
+	"github.com/opensds/multi-cloud/block/pkg/db"
 	pb "github.com/opensds/multi-cloud/block/proto"
-	"github.com/opensds/multi-cloud/dataflow/pkg/utils"
-	"github.com/opensds/multi-cloud/datamover/pkg/db"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -32,12 +32,49 @@ type blockService struct {
 }
 
 func NewBlockService() pb.BlockHandler {
-	host := os.Getenv("DB_HOST")
-	dbstor := utils.Database{Credential: "unkonwn", Driver: "mongodb", Endpoint: host}
-	db.Init(&dbstor)
-
-	log.Infof("Init block service finished.\n")
 	return &blockService{
 		backendClient: backend.NewBackendService("backend", client.DefaultClient),
 	}
+}
+
+func (b *blockService) ListVolume(ctx context.Context, in *pb.ListVolumeRequest, out *pb.ListVolumeResponse) error {
+	log.Info("Received ListBackend request.")
+
+	if in.Limit < 0 || in.Offset < 0 {
+		msg := fmt.Sprintf("invalid pagination parameter, limit = %d and offset = %d.", in.Limit, in.Offset)
+		log.Info(msg)
+		return errors.New(msg)
+	}
+
+	res, err := db.DbAdapter.ListVolume(ctx, int(in.Limit), int(in.Offset), in.Filter)
+	if err != nil {
+		log.Errorf("failed to list volumes: %v\n", err)
+		return err
+	}
+
+	var volumes []*pb.Volume
+	for _, item := range res {
+		volumes = append(volumes, &pb.Volume{
+			Id:                 item.Id.Hex(),
+			Name:               item.Name,
+			Description:        item.Description,
+			TenantId:           item.TenantId,
+			UserId:             item.UserId,
+			BackendId:          item.BackendId,
+			SnapshotId:         item.SnapshotId,
+			Size:               item.Size,
+			Type:               item.Type,
+			Status:             item.Status,
+			Region:             item.Region,
+			AvailabilityZone:   item.AvailabilityZone,
+			MultiAttachEnabled: item.MultiAttach,
+			Encrypted:          item.Encrypted,
+			Metadata:           item.Metadata,
+		})
+	}
+	out.Volumes = volumes
+	out.Next = in.Offset + int32(len(res))
+
+	log.Infof("Get volume successfully, #num=%d, volumes: %+v\n", len(volumes), volumes)
+	return nil
 }

@@ -12,24 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package job
+package config
 
-import (
-	"context"
-	"github.com/opensds/multi-cloud/dataflow/pkg/db"
-	. "github.com/opensds/multi-cloud/dataflow/pkg/model"
-	log "github.com/sirupsen/logrus"
-)
-
-func Create(ctx context.Context, job *Job) (*Job, error) {
-	return db.DbAdapter.CreateJob(ctx, job)
-}
-
-func Get(ctx context.Context, id string) (*Job, error) {
-	log.Infof("get job %s", id)
-	return db.DbAdapter.GetJob(ctx, id)
-}
-
-func List(ctx context.Context, limit int, offset int, filter interface{}) ([]Job, error) {
-	return db.DbAdapter.ListJob(ctx, limit, offset, filter)
+type Database struct {
+	Credential string `conf:"credential,username:password@tcp(ip:port)/dbname"`
+	Driver     string `conf:"driver,mongodb"`
+	Endpoint   string `conf:"endpoint,localhost:27017"`
 }

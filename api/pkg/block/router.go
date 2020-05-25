@@ -16,12 +16,12 @@ package block
 
 import (
 	"github.com/emicklei/go-restful"
-	"github.com/micro/go-micro/client"
+	"github.com/micro/go-micro/v2/client"
 )
 
 //RegisterRouter - route request to appropriate method
 func RegisterRouter(ws *restful.WebService) {
 	handler := NewAPIService(client.DefaultClient)
-	ws.Route(ws.GET("/v1/{tenantId}/backend/{backendId}/volumes").To(handler.RouteVolumeList)).Doc("List all block devices")
+	ws.Route(ws.GET("/v1/{tenantId}/backends/{backendId}/volumes").To(handler.ListVolume)).Doc("List all block devices")
 
 }

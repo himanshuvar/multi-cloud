@@ -1,4 +1,4 @@
-// Copyright 2019 The OpenSDS Authors.
+// Copyright 2020 The OpenSDS Authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,40 +17,54 @@ package mongo
 import (
 	"context"
 	"errors"
+	"math"
+	"sync"
 
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
 	"github.com/micro/go-micro/v2/metadata"
 	"github.com/opensds/multi-cloud/api/pkg/common"
+	"github.com/opensds/multi-cloud/block/pkg/model"
 	log "github.com/sirupsen/logrus"
 )
 
-var adap = &adapter{}
-var DataBaseName = "metadatastore"
-var BucketMD = "metadatabucket"
+var adapter = &mongoAdapter{}
+var mutex sync.Mutex
+var DataBaseName = "multi-cloud"
+var VolumeCollection = "volumes"
 
-func Init(host string) *adapter {
-	//fmt.Println("edps:", deps)
+func Init(host string) *mongoAdapter {
+	mutex.Lock()
+	defer mutex.Unlock()
+
+	if adapter.session != nil {
+		return adapter
+	}
+
 	session, err := mgo.Dial(host)
 	if err != nil {
 		panic(err)
 	}
-	//defer session.Close()
-
 	session.SetMode(mgo.Monotonic, true)
-	adap.s = session
-	adap.userID = "unknown"
-
-	return adap
+	adapter.session = session
+	return adapter
 }
 
 func Exit() {
-	adap.s.Close()
+	adapter.session.Close()
 }
 
-type adapter struct {
-	s      *mgo.Session
-	userID string
+type mongoAdapter struct {
+	session *mgo.Session
+	userID  string
+}
+
+// The implementation of Repository
+func UpdateFilter(m bson.M, filter map[string]string) error {
+	for k, v := range filter {
+		m[k] = interface{}(v)
+	}
+	return nil
 }
 
 func UpdateContextFilter(ctx context.Context, m bson.M) error {
@@ -72,4 +86,31 @@ func UpdateContextFilter(ctx context.Context, m bson.M) error {
 	}
 
 	return nil
+}
+
+func (adapter *mongoAdapter) ListVolume(ctx context.Context, limit, offset int,
+	query interface{}) ([]*model.Volume, error) {
+
+	session := adapter.session.Copy()
+	defer session.Close()
+
+	if limit == 0 {
+		limit = math.MinInt32
+	}
+	var backends []*model.Volume
+
+	m := bson.M{}
+	UpdateFilter(m, query.(map[string]string))
+	err := UpdateContextFilter(ctx, m)
+	if err != nil {
+		return nil, err
+	}
+	log.Infof("ListBackend, limit=%d, offset=%d, m=%+v\n", limit, offset, m)
+
+	err = session.DB(DataBaseName).C(VolumeCollection).Find(m).Skip(offset).Limit(limit).All(&backends)
+	if err != nil {
+		return nil, err
+	}
+
+	return backends, nil
 }

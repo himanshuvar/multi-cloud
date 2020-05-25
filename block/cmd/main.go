@@ -16,8 +16,11 @@ package main
 
 import (
 	"fmt"
+	"github.com/opensds/multi-cloud/block/pkg/db"
+	"github.com/opensds/multi-cloud/block/pkg/utils/config"
+	"os"
 
-	"github.com/micro/go-micro"
+	"github.com/micro/go-micro/v2"
 	"github.com/opensds/multi-cloud/api/pkg/utils/obs"
 	handler "github.com/opensds/multi-cloud/block/pkg/service"
 	pb "github.com/opensds/multi-cloud/block/proto"
@@ -25,6 +28,11 @@ import (
 )
 
 func main() {
+	dbHost := os.Getenv("DB_HOST")
+	dbStore := &config.Database{Credential: "unkonwn", Driver: "mongodb", Endpoint: dbHost}
+	db.Init(dbStore)
+	defer db.Exit(dbStore)
+
 	service := micro.NewService(
 		micro.Name("block"),
 	)
@@ -38,4 +46,5 @@ func main() {
 	if err := service.Run(); err != nil {
 		fmt.Println(err)
 	}
+	log.Infof("Init block service finished.\n")
 }

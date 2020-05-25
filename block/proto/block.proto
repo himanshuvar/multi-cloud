@@ -15,32 +15,55 @@
 syntax = "proto3";
 
 service Block {
-    rpc ListVolumes (VolumeRequest) returns (ListVolumesResponse) {
-    }
+    rpc ListVolume(ListVolumeRequest) returns (ListVolumeResponse) {}
 }
 
 message Volume {
-    string  name = 1;
-    string  volId = 2;
-    int64   volSize = 3;
-    string  volType = 4;
-    string  volStatus = 5;
-    bool    volMultiAttachEnabled = 6;
-    bool    volEncrypted = 7;
-
-    // TODO: Add more attributes to make it generic Volume structure
-}
-
-message ListVolumesResponse {
-    int32 errorCode = 1;
-    repeated Volume volumes = 2;
-}
-
-message VolumeRequest {
-    string backendId = 1;
-}
-
-message BaseRequest {
+    //The uuid of the volume.
     string id = 1;
+    // The name of the volume.
+    string  name = 2;
+    // The description of the volume.
+    string  description =3;
+    // The uuid of the project that the volume belongs to.
+    string tenantId = 4;
+    // The uuid of the user that the volume belongs to.
+    string userId = 5;
+    // The uuid of the backend that the volume belongs to.
+    string backendId = 6;
+    // The uuid of the snapshot which the volume is created
+    string snapshotId = 7;
+    // The size of the volume requested by the user.
+    int64   size = 8;
+    // The type of the volume.
+    string  type = 9;
+    // The location that volume belongs to.
+    string  region = 10;
+    // The locality that volume belongs to.
+    string  availabilityZone = 11;
+    // The status of the volume.
+    string  status = 12;
+    // Any tags assigned to the volume.
+    map<string, string> tags = 13;
+    // Indicates whether Multi-Attach is enabled.
+    bool    multiAttachEnabled = 14;
+    // Indicates whether the volume is encrypted.
+    bool    encrypted = 15;
+    // EncryptionSettings that was used to protect the volume encryption.
+    map<string, string> encryptionSettings = 16;
+    // Metadata should be kept until the semantics between volume and backend storage resource.
+    map<string, string> metadata = 17;
 }
 
+message ListVolumeRequest {
+    int32 limit = 1;
+    int32 offset = 2;
+    repeated string sortKeys = 3;
+    repeated string sortDirs = 4;
+    map<string, string> Filter = 5;
+}
+
+message ListVolumeResponse {
+    repeated Volume volumes = 1;
+    int32 next = 2;
+}

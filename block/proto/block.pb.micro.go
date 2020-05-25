@@ -11,8 +11,9 @@ import (
 
 import (
 	context "context"
-	client "github.com/micro/go-micro/client"
-	server "github.com/micro/go-micro/server"
+	api "github.com/micro/go-micro/v2/api"
+	client "github.com/micro/go-micro/v2/client"
+	server "github.com/micro/go-micro/v2/server"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -27,17 +28,21 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
 // Reference imports to suppress errors if they are not otherwise used.
+var _ api.Endpoint
 var _ context.Context
 var _ client.Option
 var _ server.Option
 
 // Api Endpoints for Block service
 
+func NewBlockEndpoints() []*api.Endpoint {
+	return []*api.Endpoint{}
+}
 
 // Client API for Block service
 
 type BlockService interface {
-	ListVolumes(ctx context.Context, in *VolumeRequest, opts ...client.CallOption) (*ListVolumesResponse, error)
+	ListVolume(ctx context.Context, in *ListVolumeRequest, opts ...client.CallOption) (*ListVolumeResponse, error)
 }
 
 type blockService struct {
@@ -52,9 +57,9 @@ func NewBlockService(name string, c client.Client) BlockService {
 	}
 }
 
-func (c *blockService) ListVolumes(ctx context.Context, in *VolumeRequest, opts ...client.CallOption) (*ListVolumesResponse, error) {
-	req := c.c.NewRequest(c.name, "Block.ListVolumes", in)
-	out := new(ListVolumesResponse)
+func (c *blockService) ListVolume(ctx context.Context, in *ListVolumeRequest, opts ...client.CallOption) (*ListVolumeResponse, error) {
+	req := c.c.NewRequest(c.name, "Block.ListVolume", in)
+	out := new(ListVolumeResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -65,12 +70,12 @@ func (c *blockService) ListVolumes(ctx context.Context, in *VolumeRequest, opts 
 // Server API for Block service
 
 type BlockHandler interface {
-	ListVolumes(context.Context, *VolumeRequest, *ListVolumesResponse) error
+	ListVolume(context.Context, *ListVolumeRequest, *ListVolumeResponse) error
 }
 
 func RegisterBlockHandler(s server.Server, hdlr BlockHandler, opts ...server.HandlerOption) error {
 	type block interface {
-		ListVolumes(ctx context.Context, in *VolumeRequest, out *ListVolumesResponse) error
+		ListVolume(ctx context.Context, in *ListVolumeRequest, out *ListVolumeResponse) error
 	}
 	type Block struct {
 		block
@@ -83,6 +88,6 @@ type blockHandler struct {
 	BlockHandler
 }
 
-func (h *blockHandler) ListVolumes(ctx context.Context, in *VolumeRequest, out *ListVolumesResponse) error {
-	return h.BlockHandler.ListVolumes(ctx, in, out)
+func (h *blockHandler) ListVolume(ctx context.Context, in *ListVolumeRequest, out *ListVolumeResponse) error {
+	return h.BlockHandler.ListVolume(ctx, in, out)
 }

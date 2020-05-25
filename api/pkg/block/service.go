@@ -15,11 +15,17 @@
 package block
 
 import (
+	"context"
+	"net/http"
+
 	"github.com/emicklei/go-restful"
-	"github.com/micro/go-micro/client"
+	"github.com/micro/go-micro/v2/client"
+	"github.com/opensds/multi-cloud/api/pkg/common"
 	"github.com/opensds/multi-cloud/api/pkg/policy"
 	"github.com/opensds/multi-cloud/backend/proto"
 	"github.com/opensds/multi-cloud/block/proto"
+
+	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -39,10 +45,121 @@ func NewAPIService(c client.Client) *APIService {
 	}
 }
 
-func (s *APIService) RouteVolumeList(request *restful.Request, response *restful.Response) {
+func UpdateFilter(reqFilter map[string]string, filter map[string]string) error {
+	for k, v := range filter {
+		reqFilter[k] = v
+	}
+	return nil
+}
+
+func WriteError(response *restful.Response, msg string, err error) {
+	log.Errorf(msg, err)
+	error := response.WriteError(http.StatusInternalServerError, err)
+	if error != nil {
+		log.Errorf("response write status and http error failed: %v\n", err)
+		return
+	}
+}
+
+func (s *APIService) ListVolume(request *restful.Request, response *restful.Response) {
 	if !policy.Authorize(request, response, "volume:list") {
 		return
 	}
+	log.Info("received request for volume list.")
 
-	s.ListVolumes(request, response)
+	ctx := common.InitCtxWithAuthInfo(request)
+	backendId := request.PathParameter(common.REQUEST_PATH_BACKEND_ID)
+	if backendId != "" {
+		s.listVolumeByBackend(ctx, request, response, backendId)
+	} else {
+		s.listVolumeDefault(ctx, request, response)
+	}
+}
+
+func (s *APIService) prepareVolumeRequest(request *restful.Request, response *restful.Response) *block.ListVolumeRequest {
+
+	limit, offset, err := common.GetPaginationParam(request)
+	if err != nil {
+		WriteError(response, "get pagination parameters failed: %v\n", err)
+		return nil
+	}
+
+	sortKeys, sortDirs, err := common.GetSortParam(request)
+	if err != nil {
+		WriteError(response, "get sort parameters failed: %v\n", err)
+		return nil
+	}
+
+	filterOpts := []string{"name", "type", "status"}
+	filter, err := common.GetFilter(request, filterOpts)
+	if err != nil {
+		WriteError(response, "get filter failed: %v\n", err)
+		return nil
+	}
+
+	return &block.ListVolumeRequest{
+		Limit:    limit,
+		Offset:   offset,
+		SortKeys: sortKeys,
+		SortDirs: sortDirs,
+		Filter:   filter,
+	}
+}
+
+func (s *APIService) listVolumeDefault(ctx context.Context, request *restful.Request, response *restful.Response) {
+	listVolumeRequest := s.prepareVolumeRequest(request, response)
+
+	res, err := s.blockClient.ListVolume(ctx, listVolumeRequest)
+	if err != nil {
+		WriteError(response, "list volumes failed: %v\n", err)
+		return
+	}
+
+	log.Info("list volumes successfully.")
+
+	err = response.WriteEntity(res)
+	if err != nil {
+		log.Errorf("response write entity failed: %v\n", err)
+		return
+	}
+}
+
+func (s *APIService) listVolumeByBackend(ctx context.Context, request *restful.Request, response *restful.Response,
+	backendId string) {
+
+	backendResp, err := s.backendClient.GetBackend(ctx, &backend.GetBackendRequest{Id: backendId})
+	if err != nil {
+		WriteError(response, "get backend details failed: %v\n", err)
+		return
+	}
+	log.Infof("backend response = [%+v]\n", backendResp)
+
+	filterPathOpts := []string{"backendId"}
+	filterPath, err := common.GetFilterPathParams(request, filterPathOpts)
+	if err != nil {
+		WriteError(response, "get filter failed: %v\n", err)
+		return
+	}
+
+	listVolumeRequest := s.prepareVolumeRequest(request, response)
+
+	err = UpdateFilter(listVolumeRequest.Filter, filterPath)
+	if err != nil {
+		log.Errorf("update filter failed: %v\n", err)
+		return
+	}
+
+	res, err := s.blockClient.ListVolume(ctx, listVolumeRequest)
+	if err != nil {
+		WriteError(response, "list volumes failed: %v\n", err)
+		return
+	}
+
+	log.Info("list volumes successfully.")
+
+	err = response.WriteEntity(res)
+	if err != nil {
+		log.Errorf("response write entity failed: %v\n", err)
+		return
+	}
 }

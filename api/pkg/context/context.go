@@ -20,6 +20,7 @@ package context
 import (
 	"encoding/json"
 	"reflect"
+	"time"
 
 	"github.com/emicklei/go-restful"
 	log "github.com/sirupsen/logrus"
@@ -91,6 +92,22 @@ type Context struct {
 	UserDomainName    string   `policy:"true" json:"user_domain_name"`
 	ProjectDomainName string   `policy:"true" json:"project_domain_name"`
 	IsAdminTenant     bool     `policy:"true" json:"is_admin_tenant"`
+}
+
+func (ctx *Context) Deadline() (deadline time.Time, ok bool) {
+	panic("implement me")
+}
+
+func (ctx *Context) Done() <-chan struct{} {
+	panic("implement me")
+}
+
+func (ctx *Context) Err() error {
+	panic("implement me")
+}
+
+func (ctx *Context) Value(key interface{}) interface{} {
+	panic("implement me")
 }
 
 func (ctx *Context) ToPolicyValue() map[string]interface{} {
