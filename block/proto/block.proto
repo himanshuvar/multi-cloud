@@ -16,6 +16,7 @@ syntax = "proto3";
 
 service Block {
     rpc ListVolume(ListVolumeRequest) returns (ListVolumeResponse) {}
+    rpc GetVolume(GetVolumeRequest) returns (GetVolumeResponse) {}
 }
 
 message Volume {
@@ -66,4 +67,12 @@ message ListVolumeRequest {
 message ListVolumeResponse {
     repeated Volume volumes = 1;
     int32 next = 2;
+}
+
+message GetVolumeRequest {
+    string id = 1;
+}
+
+message GetVolumeResponse {
+    Volume volume = 1;
 }

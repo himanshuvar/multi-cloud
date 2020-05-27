@@ -78,3 +78,31 @@ func (b *blockService) ListVolume(ctx context.Context, in *pb.ListVolumeRequest,
 	log.Infof("Get volume successfully, #num=%d, volumes: %+v\n", len(volumes), volumes)
 	return nil
 }
+
+func (b *blockService) GetVolume(ctx context.Context, in *pb.GetVolumeRequest, out *pb.GetVolumeResponse) error {
+	log.Info("Received GetVolume request.")
+	res, err := db.DbAdapter.GetVolume(ctx, in.Id)
+	if err != nil {
+		log.Errorf("failed to get volume: %v\n", err)
+		return err
+	}
+	out.Volume = &pb.Volume{
+		Id:                 res.Id.Hex(),
+		Name:               res.Name,
+		Description:        res.Description,
+		TenantId:           res.TenantId,
+		UserId:             res.UserId,
+		BackendId:          res.BackendId,
+		SnapshotId:         res.SnapshotId,
+		Size:               res.Size,
+		Type:               res.Type,
+		Status:             res.Status,
+		Region:             res.Region,
+		AvailabilityZone:   res.AvailabilityZone,
+		MultiAttachEnabled: res.MultiAttach,
+		Encrypted:          res.Encrypted,
+		Metadata:           res.Metadata,
+	}
+	log.Info("Get volume successfully.")
+	return nil
+}

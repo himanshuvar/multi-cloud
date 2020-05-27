@@ -49,4 +49,5 @@ func Exit(db *config.Database) {
 
 type DBAdapter interface {
 	ListVolume(ctx context.Context, limit, offset int, query interface{}) ([]*model.Volume, error)
+	GetVolume(ctx context.Context, id string) (*model.Volume, error)
 }

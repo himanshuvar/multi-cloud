@@ -163,3 +163,22 @@ func (s *APIService) listVolumeByBackend(ctx context.Context, request *restful.R
 		return
 	}
 }
+
+func (s *APIService) GetVolume(request *restful.Request, response *restful.Response) {
+	if !policy.Authorize(request, response, "volume:get") {
+		return
+	}
+	log.Infof("Received request for volume details: %s\n", request.PathParameter("id"))
+	id := request.PathParameter("id")
+
+	ctx := common.InitCtxWithAuthInfo(request)
+	res, err := s.blockClient.GetVolume(ctx, &block.GetVolumeRequest{Id: id})
+	if err != nil {
+		log.Errorf("failed to get volume details: %v\n", err)
+		response.WriteError(http.StatusInternalServerError, err)
+		return
+	}
+
+	log.Info("Get backend details successfully.")
+	response.WriteEntity(res.Volume)
+}

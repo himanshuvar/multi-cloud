@@ -43,6 +43,7 @@ func NewBlockEndpoints() []*api.Endpoint {
 
 type BlockService interface {
 	ListVolume(ctx context.Context, in *ListVolumeRequest, opts ...client.CallOption) (*ListVolumeResponse, error)
+	GetVolume(ctx context.Context, in *GetVolumeRequest, opts ...client.CallOption) (*GetVolumeResponse, error)
 }
 
 type blockService struct {
@@ -67,15 +68,27 @@ func (c *blockService) ListVolume(ctx context.Context, in *ListVolumeRequest, op
 	return out, nil
 }
 
+func (c *blockService) GetVolume(ctx context.Context, in *GetVolumeRequest, opts ...client.CallOption) (*GetVolumeResponse, error) {
+	req := c.c.NewRequest(c.name, "Block.GetVolume", in)
+	out := new(GetVolumeResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Block service
 
 type BlockHandler interface {
 	ListVolume(context.Context, *ListVolumeRequest, *ListVolumeResponse) error
+	GetVolume(context.Context, *GetVolumeRequest, *GetVolumeResponse) error
 }
 
 func RegisterBlockHandler(s server.Server, hdlr BlockHandler, opts ...server.HandlerOption) error {
 	type block interface {
 		ListVolume(ctx context.Context, in *ListVolumeRequest, out *ListVolumeResponse) error
+		GetVolume(ctx context.Context, in *GetVolumeRequest, out *GetVolumeResponse) error
 	}
 	type Block struct {
 		block
@@ -90,4 +103,8 @@ type blockHandler struct {
 
 func (h *blockHandler) ListVolume(ctx context.Context, in *ListVolumeRequest, out *ListVolumeResponse) error {
 	return h.BlockHandler.ListVolume(ctx, in, out)
+}
+
+func (h *blockHandler) GetVolume(ctx context.Context, in *GetVolumeRequest, out *GetVolumeResponse) error {
+	return h.BlockHandler.GetVolume(ctx, in, out)
 }

@@ -114,3 +114,23 @@ func (adapter *mongoAdapter) ListVolume(ctx context.Context, limit, offset int,
 
 	return backends, nil
 }
+
+func (adapter *mongoAdapter) GetVolume(ctx context.Context, id string) (*model.Volume,
+	error) {
+	session := adapter.session.Copy()
+	defer session.Close()
+
+	m := bson.M{"_id": bson.ObjectIdHex(id)}
+	err := UpdateContextFilter(ctx, m)
+	if err != nil {
+		return nil, err
+	}
+
+	var volume = &model.Volume{}
+	collection := session.DB(DataBaseName).C(VolumeCollection)
+	err = collection.Find(m).One(volume)
+	if err != nil {
+		return nil, err
+	}
+	return volume, nil
+}
