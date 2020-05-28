@@ -39,5 +39,6 @@
 
   "volume:list": "",
   "volume:get":"",
+  "volume:create":"",
   "volume:delete":""
 }

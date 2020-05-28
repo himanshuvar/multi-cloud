@@ -24,6 +24,7 @@ import (
 	"github.com/opensds/multi-cloud/api/pkg/policy"
 	"github.com/opensds/multi-cloud/backend/proto"
 	"github.com/opensds/multi-cloud/block/proto"
+	c "github.com/opensds/multi-cloud/api/pkg/context"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -180,6 +181,34 @@ func (s *APIService) GetVolume(request *restful.Request, response *restful.Respo
 	}
 
 	log.Info("Get backend details successfully.")
+	response.WriteEntity(res.Volume)
+}
+
+func (s *APIService) CreateVolume(request *restful.Request, response *restful.Response) {
+	if !policy.Authorize(request, response, "volume:create") {
+		return
+	}
+	log.Info("Received request for creating volume.")
+	volume := &block.Volume{}
+	err := request.ReadEntity(&volume)
+	if err != nil {
+		log.Errorf("failed to read request body: %v\n", err)
+		response.WriteError(http.StatusInternalServerError, err)
+		return
+	}
+
+	ctx := common.InitCtxWithAuthInfo(request)
+	actx := request.Attribute(c.KContext).(*c.Context)
+	volume.TenantId = actx.TenantId
+	volume.UserId = actx.UserId
+	res, err := s.blockClient.CreateVolume(ctx, &block.CreateVolumeRequest{Volume:volume})
+	if err != nil {
+		log.Errorf("failed to create volume: %v\n", err)
+		response.WriteError(http.StatusInternalServerError, err)
+		return
+	}
+
+	log.Info("Create volume successfully.")
 	response.WriteEntity(res.Volume)
 }
 

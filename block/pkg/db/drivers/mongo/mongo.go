@@ -135,6 +135,21 @@ func (adapter *mongoAdapter) GetVolume(ctx context.Context, id string) (*model.V
 	return volume, nil
 }
 
+func (adapter *mongoAdapter) CreateVolume(ctx context.Context, volume *model.Volume) (*model.Volume, error) {
+	session := adapter.session.Copy()
+	defer session.Close()
+
+	if volume.Id == "" {
+		volume.Id = bson.NewObjectId()
+	}
+
+	err := session.DB(DataBaseName).C(VolumeCollection).Insert(volume)
+	if err != nil {
+		return nil, err
+	}
+	return volume, nil
+}
+
 func (adapter *mongoAdapter) DeleteVolume(ctx context.Context, id string) error {
 	session := adapter.session.Copy()
 	defer session.Close()

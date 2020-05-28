@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/opensds/multi-cloud/block/pkg/model"
 	_ "strings"
 
 	"github.com/micro/go-micro/v2/client"
@@ -105,6 +106,53 @@ func (b *blockService) GetVolume(ctx context.Context, in *pb.GetVolumeRequest, o
 	}
 	log.Info("Get volume successfully.")
 	return nil
+}
+
+func (b *blockService) CreateVolume(ctx context.Context, in *pb.CreateVolumeRequest, out *pb.CreateVolumeResponse) error {
+	log.Info("Received CreateVolume request.")
+	volume := &model.Volume{
+		Name:               in.Volume.Name,
+		Description:        in.Volume.Description,
+		TenantId:           in.Volume.TenantId,
+		UserId:             in.Volume.UserId,
+		BackendId:          in.Volume.BackendId,
+		SnapshotId:         in.Volume.SnapshotId,
+		Size:               in.Volume.Size,
+		Type:               in.Volume.Type,
+		Status:             in.Volume.Status,
+		Region:             in.Volume.Region,
+		AvailabilityZone:   in.Volume.AvailabilityZone,
+		MultiAttach:        in.Volume.MultiAttachEnabled,
+		Encrypted:          in.Volume.Encrypted,
+		Metadata:           in.Volume.Metadata,
+	}
+
+	res, err := db.DbAdapter.CreateVolume(ctx, volume)
+	if err != nil {
+		log.Errorf("Failed to create volume: %v", err)
+		return err
+	}
+
+	out.Volume = &pb.Volume{
+		Id:                 res.Id.Hex(),
+		Name:               res.Name,
+		Description:        res.Description,
+		TenantId:           res.TenantId,
+		UserId:             res.UserId,
+		BackendId:          res.BackendId,
+		SnapshotId:         res.SnapshotId,
+		Size:               res.Size,
+		Type:               res.Type,
+		Status:             res.Status,
+		Region:             res.Region,
+		AvailabilityZone:   res.AvailabilityZone,
+		MultiAttachEnabled: res.MultiAttach,
+		Encrypted:          res.Encrypted,
+		Metadata:           res.Metadata,
+	}
+	log.Info("Create volume successfully.")
+	return nil
+
 }
 
 func (b *blockService) DeleteVolume(ctx  context.Context, in *pb.DeleteVolumeRequest, out *pb.DeleteVolumeResponse) error {

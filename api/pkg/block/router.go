@@ -26,6 +26,8 @@ func RegisterRouter(ws *restful.WebService) {
 		Doc("List all block devices")
 	ws.Route(ws.GET("/v1/{tenantId}/backends/{backendId}/volumes/{id}").To(handler.GetVolume)).
 		Doc("Show block device details")
+	ws.Route(ws.POST("/v1/{tenantId}/backends/{backendId}/volumes").To(handler.CreateVolume)).
+		Doc("Create block device")
 	ws.Route(ws.DELETE("/v1/{tenantId}/backends/{backendId}/volumes/{id}").To(handler.DeleteVolume)).
 		Doc("Delete block device")
 
