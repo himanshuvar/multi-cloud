@@ -21,24 +21,24 @@ import (
 	_ "strings"
 
 	"github.com/micro/go-micro/v2/client"
-	backend "github.com/opensds/multi-cloud/backend/proto"
 	"github.com/opensds/multi-cloud/block/pkg/db"
+	block "github.com/opensds/multi-cloud/block/proto"
 	pb "github.com/opensds/multi-cloud/block/proto"
 	log "github.com/sirupsen/logrus"
 )
 
 type blockService struct {
-	backendClient backend.BackendService
+	blockClient block.BlockService
 }
 
 func NewBlockService() pb.BlockHandler {
 	return &blockService{
-		backendClient: backend.NewBackendService("backend", client.DefaultClient),
+		blockClient: block.NewBlockService("block", client.DefaultClient),
 	}
 }
 
 func (b *blockService) ListVolume(ctx context.Context, in *pb.ListVolumeRequest, out *pb.ListVolumeResponse) error {
-	log.Info("Received ListBackend request.")
+	log.Info("Received ListVolume request.")
 
 	if in.Limit < 0 || in.Offset < 0 {
 		msg := fmt.Sprintf("invalid pagination parameter, limit = %d and offset = %d.", in.Limit, in.Offset)
@@ -75,7 +75,7 @@ func (b *blockService) ListVolume(ctx context.Context, in *pb.ListVolumeRequest,
 	out.Volumes = volumes
 	out.Next = in.Offset + int32(len(res))
 
-	log.Infof("Get volume successfully, #num=%d, volumes: %+v\n", len(volumes), volumes)
+	log.Infof("List volume successfully, #num=%d, volumes: %+v\n", len(volumes), volumes)
 	return nil
 }
 
@@ -104,5 +104,16 @@ func (b *blockService) GetVolume(ctx context.Context, in *pb.GetVolumeRequest, o
 		Metadata:           res.Metadata,
 	}
 	log.Info("Get volume successfully.")
+	return nil
+}
+
+func (b *blockService) DeleteVolume(ctx  context.Context, in *pb.DeleteVolumeRequest, out *pb.DeleteVolumeResponse) error {
+	log.Info("Received DeleteVolume request.")
+	err := db.DbAdapter.DeleteVolume(ctx, in.Id)
+	if err != nil {
+		log.Errorf("failed to delete volume: %v\n", err)
+		return err
+	}
+	log.Info("Delete volume successfully.")
 	return nil
 }

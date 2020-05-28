@@ -38,5 +38,6 @@
   "bucketlifecycle:delete": "",
 
   "volume:list": "",
-  "volume:get":""
+  "volume:get":"",
+  "volume:delete":""
 }

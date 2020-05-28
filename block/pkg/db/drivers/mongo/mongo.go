@@ -134,3 +134,16 @@ func (adapter *mongoAdapter) GetVolume(ctx context.Context, id string) (*model.V
 	}
 	return volume, nil
 }
+
+func (adapter *mongoAdapter) DeleteVolume(ctx context.Context, id string) error {
+	session := adapter.session.Copy()
+	defer session.Close()
+
+	m := bson.M{"_id": bson.ObjectIdHex(id)}
+	err := UpdateContextFilter(ctx, m)
+	if err != nil {
+		return err
+	}
+
+	return session.DB(DataBaseName).C(VolumeCollection).Remove(m)
+}

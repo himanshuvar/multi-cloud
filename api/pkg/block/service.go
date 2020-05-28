@@ -182,3 +182,23 @@ func (s *APIService) GetVolume(request *restful.Request, response *restful.Respo
 	log.Info("Get backend details successfully.")
 	response.WriteEntity(res.Volume)
 }
+
+func (s *APIService) DeleteVolume(request *restful.Request, response *restful.Response) {
+	if !policy.Authorize(request, response, "volume:delete") {
+		return
+	}
+
+	id := request.PathParameter("id")
+	log.Infof("Received request for deleting volume: %s\n", id)
+
+	ctx := common.InitCtxWithAuthInfo(request)
+	res, err := s.blockClient.DeleteVolume(ctx, &block.DeleteVolumeRequest{Id: id})
+	if err != nil {
+		log.Errorf("failed to delete volume: %v\n", err)
+		response.WriteError(http.StatusInternalServerError, err)
+		return
+	}
+
+	log.Info("Delete volume successfully.")
+	response.WriteEntity(res)
+}

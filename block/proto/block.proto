@@ -17,6 +17,7 @@ syntax = "proto3";
 service Block {
     rpc ListVolume(ListVolumeRequest) returns (ListVolumeResponse) {}
     rpc GetVolume(GetVolumeRequest) returns (GetVolumeResponse) {}
+    rpc DeleteVolume(DeleteVolumeRequest) returns (DeleteVolumeResponse) {}
 }
 
 message Volume {
@@ -75,4 +76,11 @@ message GetVolumeRequest {
 
 message GetVolumeResponse {
     Volume volume = 1;
+}
+
+message DeleteVolumeRequest {
+    string id = 1;
+}
+
+message DeleteVolumeResponse {
 }
