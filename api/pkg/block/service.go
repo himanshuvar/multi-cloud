@@ -62,6 +62,16 @@ func WriteError(response *restful.Response, msg string, err error) {
 	}
 }
 
+func (s *APIService) checkBackendExists(ctx context.Context, request *restful.Request, response *restful.Response,
+	backendId string){
+	backendResp, err := s.backendClient.GetBackend(ctx, &backend.GetBackendRequest{Id: backendId})
+	if err != nil {
+		WriteError(response, "get backend details failed: %v\n", err)
+		return
+	}
+	log.Infof("backend response = [%+v]\n", backendResp)
+}
+
 func (s *APIService) ListVolume(request *restful.Request, response *restful.Response) {
 	if !policy.Authorize(request, response, "volume:list") {
 		return
@@ -128,12 +138,7 @@ func (s *APIService) listVolumeDefault(ctx context.Context, request *restful.Req
 func (s *APIService) listVolumeByBackend(ctx context.Context, request *restful.Request, response *restful.Response,
 	backendId string) {
 
-	backendResp, err := s.backendClient.GetBackend(ctx, &backend.GetBackendRequest{Id: backendId})
-	if err != nil {
-		WriteError(response, "get backend details failed: %v\n", err)
-		return
-	}
-	log.Infof("backend response = [%+v]\n", backendResp)
+	s.checkBackendExists(ctx, request, response, backendId)
 
 	filterPathOpts := []string{"backendId"}
 	filterPath, err := common.GetFilterPathParams(request, filterPathOpts)
@@ -173,6 +178,10 @@ func (s *APIService) GetVolume(request *restful.Request, response *restful.Respo
 	id := request.PathParameter("id")
 
 	ctx := common.InitCtxWithAuthInfo(request)
+
+	backendId := request.PathParameter(common.REQUEST_PATH_BACKEND_ID)
+	s.checkBackendExists(ctx, request, response, backendId)
+
 	res, err := s.blockClient.GetVolume(ctx, &block.GetVolumeRequest{Id: id})
 	if err != nil {
 		log.Errorf("failed to get volume details: %v\n", err)
@@ -198,6 +207,10 @@ func (s *APIService) CreateVolume(request *restful.Request, response *restful.Re
 	}
 
 	ctx := common.InitCtxWithAuthInfo(request)
+
+	backendId := request.PathParameter(common.REQUEST_PATH_BACKEND_ID)
+	s.checkBackendExists(ctx, request, response, backendId)
+
 	actx := request.Attribute(c.KContext).(*c.Context)
 	volume.TenantId = actx.TenantId
 	volume.UserId = actx.UserId
@@ -221,6 +234,10 @@ func (s *APIService) DeleteVolume(request *restful.Request, response *restful.Re
 	log.Infof("Received request for deleting volume: %s\n", id)
 
 	ctx := common.InitCtxWithAuthInfo(request)
+
+	backendId := request.PathParameter(common.REQUEST_PATH_BACKEND_ID)
+	s.checkBackendExists(ctx, request, response, backendId)
+
 	res, err := s.blockClient.DeleteVolume(ctx, &block.DeleteVolumeRequest{Id: id})
 	if err != nil {
 		log.Errorf("failed to delete volume: %v\n", err)
