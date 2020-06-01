@@ -18,19 +18,19 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
-	backendpb "github.com/opensds/multi-cloud/backend/proto"
 	"github.com/opensds/multi-cloud/block/pkg/datastore/driver"
+	block "github.com/opensds/multi-cloud/block/proto"
 	log "github.com/sirupsen/logrus"
 )
 
 type AwsDriverFactory struct {
 }
 
-func (factory *AwsDriverFactory) CreateDriver(backend *backendpb.BackendDetail) (driver.StorageDriver, error) {
+func (factory *AwsDriverFactory) CreateDriver(accessInfo *block.AccessInfo) (driver.StorageDriver, error) {
 	log.Infof("Entered to create driver")
-	AccessKeyID := backend.Access
-	AccessKeySecret := backend.Security
-	region := backend.Region
+	AccessKeyID := accessInfo.Access
+	AccessKeySecret := accessInfo.Security
+	region := accessInfo.Region
 
 	// Create AWS session with the AWS cloud credentials
 	sess, err := session.NewSession(&aws.Config{

@@ -58,6 +58,12 @@ message Volume {
     map<string, string> metadata = 17;
 }
 
+message AccessInfo {
+    string access = 1;
+    string security = 2;
+    string region = 3;
+}
+
 message ListVolumeRequest {
     int32 limit = 1;
     int32 offset = 2;
@@ -81,6 +87,7 @@ message GetVolumeResponse {
 
 message CreateVolumeRequest {
     Volume volume = 1;
+    AccessInfo accessInfo = 2;
 }
 
 message CreateVolumeResponse {

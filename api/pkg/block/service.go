@@ -72,6 +72,17 @@ func (s *APIService) checkBackendExists(ctx context.Context, request *restful.Re
 	log.Infof("backend response = [%+v]\n", backendResp)
 }
 
+func (s *APIService) getBackendDetails(ctx context.Context, request *restful.Request, response *restful.Response,
+	backendId string) (*backend.GetBackendResponse, error){
+	backendResp, err := s.backendClient.GetBackend(ctx, &backend.GetBackendRequest{Id: backendId})
+	if err != nil {
+		WriteError(response, "get backend details failed: %v\n", err)
+		return nil, err
+	}
+	log.Infof("backend response = [%+v]\n", backendResp)
+	return backendResp, nil
+}
+
 func (s *APIService) ListVolume(request *restful.Request, response *restful.Response) {
 	if !policy.Authorize(request, response, "volume:list") {
 		return
@@ -209,12 +220,20 @@ func (s *APIService) CreateVolume(request *restful.Request, response *restful.Re
 	ctx := common.InitCtxWithAuthInfo(request)
 
 	backendId := request.PathParameter(common.REQUEST_PATH_BACKEND_ID)
-	s.checkBackendExists(ctx, request, response, backendId)
-
+	backendResp, err := s.getBackendDetails(ctx, request, response, backendId)
+	if err != nil {
+		log.Errorf("failed to get backend response: %v\n", err)
+		response.WriteError(http.StatusInternalServerError, err)
+		return
+	}
+	accessInfo := &block.AccessInfo{
+		Access:              backendResp.Backend.Access,
+		Security:            backendResp.Backend.Security,
+	}
 	actx := request.Attribute(c.KContext).(*c.Context)
 	volume.TenantId = actx.TenantId
 	volume.UserId = actx.UserId
-	res, err := s.blockClient.CreateVolume(ctx, &block.CreateVolumeRequest{Volume:volume})
+	res, err := s.blockClient.CreateVolume(ctx, &block.CreateVolumeRequest{Volume:volume, AccessInfo:accessInfo})
 	if err != nil {
 		log.Errorf("failed to create volume: %v\n", err)
 		response.WriteError(http.StatusInternalServerError, err)

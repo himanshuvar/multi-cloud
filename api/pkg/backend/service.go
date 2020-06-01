@@ -63,7 +63,7 @@ func (s *APIService) GetBackend(request *restful.Request, response *restful.Resp
 	res, err := s.backendClient.GetBackend(ctx, &backend.GetBackendRequest{Id: id})
 	if err != nil {
 		log.Errorf("failed to get backend details: %v\n", err)
-		response.WriteError(http.StatusInternalServerError, err)
+		response.WriteError(http.StatusNotFound, err)
 		return
 	}
 

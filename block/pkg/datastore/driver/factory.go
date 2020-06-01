@@ -15,13 +15,13 @@
 package driver
 
 import (
-	backendpb "github.com/opensds/multi-cloud/backend/proto"
-	exp "github.com/opensds/multi-cloud/block/pkg/exception"
+	. "github.com/opensds/multi-cloud/block/pkg/exception"
+	block "github.com/opensds/multi-cloud/block/proto"
 	log "github.com/sirupsen/logrus"
 )
 
 type DriverFactory interface {
-	CreateDriver(detail *backendpb.BackendDetail) (StorageDriver, error)
+	CreateDriver(accessInfo *block.AccessInfo) (StorageDriver, error)
 }
 
 var driverFactoryMgr = make(map[string]DriverFactory)
@@ -31,10 +31,10 @@ func RegisterDriverFactory(driverType string, factory DriverFactory) {
 	driverFactoryMgr[driverType] = factory
 }
 
-func CreateStorageDriver(driverType string, detail *backendpb.BackendDetail) (StorageDriver, error) {
+func CreateStorageDriver(driverType string, accessInfo *block.AccessInfo) (StorageDriver, error) {
 	log.Infof("Creating storage driver factory with driver type [%s]", driverType)
 	if factory, ok := driverFactoryMgr[driverType]; ok {
-		return factory.CreateDriver(detail)
+		return factory.CreateDriver(accessInfo)
 	}
-	return nil, exp.NoSuchType.Error()
+	return nil, NoSuchType.Error()
 }

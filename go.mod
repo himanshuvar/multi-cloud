@@ -10,6 +10,7 @@ require (
 	github.com/aws/aws-sdk-go v1.30.26
 	github.com/bsm/sarama-cluster v2.1.15+incompatible
 	github.com/confluentinc/confluent-kafka-go v1.1.0
+	github.com/cweill/gotests v1.5.3 // indirect
 	github.com/dustin/go-humanize v1.0.0
 	github.com/emicklei/go-restful v2.12.0+incompatible
 	github.com/fsnotify/fsnotify v1.4.7
@@ -39,6 +40,7 @@ require (
 	github.com/xxtea/xxtea-go v0.0.0-20170828040851-35c4b17eecf6
 	go.uber.org/automaxprocs v1.3.0
 	golang.org/x/net v0.0.0-20200506145744-7e3656a0809f
+	golang.org/x/tools v0.0.0-20200528185414-6be401e3f76e // indirect
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 )

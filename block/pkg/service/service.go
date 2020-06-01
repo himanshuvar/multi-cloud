@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/opensds/multi-cloud/block/pkg/datastore/driver"
 	"github.com/opensds/multi-cloud/block/pkg/model"
 	_ "strings"
 
@@ -132,6 +133,18 @@ func (b *blockService) CreateVolume(ctx context.Context, in *pb.CreateVolumeRequ
 		log.Errorf("Failed to create volume: %v", err)
 		return err
 	}
+
+	sd, err := driver.CreateStorageDriver("aws-block", in.AccessInfo)
+	if err != nil {
+		log.Errorln("Failed to create Storage driver err:", err)
+		return err
+	}
+	_, err = sd.CreateVolume(ctx, in.Volume)
+	if err != nil {
+		log.Errorf("Received error in getting volumes ", err)
+		return err
+	}
+
 
 	out.Volume = &pb.Volume{
 		Id:                 res.Id.Hex(),
