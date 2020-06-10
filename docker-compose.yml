@@ -84,6 +84,7 @@ services:
     image: opensdsio/multi-cloud-file
     environment:
       - MICRO_REGISTRY=mdns
+      - DB_HOST=datastore:27017
       - SVC_FLAG=file
     volumes:
       - /etc/localtime:/etc/localtime
