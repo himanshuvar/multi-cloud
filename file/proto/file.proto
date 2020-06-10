@@ -15,9 +15,65 @@
 syntax = "proto3";
 
 service File {
+    rpc ListFileShare(ListFileShareRequest) returns (ListFileShareResponse) {}
 }
 
-message BaseRequest {
+message FileShare {
+    //The uuid of the file share.
     string id = 1;
+    // The name of the file share.
+    string name = 2;
+    // The description of the file share.
+    string description =3;
+    // The uuid of the project that the file share belongs to.
+    string tenantId = 4;
+    // The uuid of the user that the file share belongs to.
+    string userId = 5;
+    // The uuid of the backend that the file share belongs to.
+    string backendId = 6;
+    // The name of the backend that the file share belongs to.
+    string backend = 7;
+    // The size of the file share requested by the user.
+    int64 size = 8;
+    // The type of the file share.
+    string type = 9;
+    // The location that file share belongs to.
+    string region = 10;
+    // The locality that file share belongs to.
+    string availabilityZone = 11;
+    // The status of the file share.
+    string status = 12;
+    // The uuid of the snapshot from which the file share is created
+    string snapshotId = 13;
+    // The protocol of the fileshare. e.g NFS, SMB etc.
+    repeated string protocols = 14;
+    // Any tags assigned to the file share.
+    repeated Tag tags = 15;
+    // Indicates whether the file share is encrypted.
+    bool encrypted = 16;
+    // EncryptionSettings that was used to protect the file share encryption.
+    map<string, string> encryptionSettings = 17;
+    // Metadata should be kept until the semantics between file share and backend storage resource.
+    map<string, string> metadata = 18;
+}
+
+message Tag {
+    // The key of the tag.
+    string key = 1;
+    // The value of the tag.
+    string value = 2;
+}
+
+message ListFileShareRequest {
+    int32 limit = 1;
+    int32 offset = 2;
+    repeated string sortKeys = 3;
+    repeated string sortDirs = 4;
+    map<string, string> Filter = 5;
+}
+
+message ListFileShareResponse {
+    repeated FileShare fileshares = 1;
+    int32 next = 2;
 }
 
