@@ -64,9 +64,11 @@ type FileShare struct {
 	Status string `json:"status,omitempty" bson:"status,omitempty"`
 
 	// The protocol of the fileshare. e.g NFS, SMB etc.
-	Protocols []string `json:"protocols,omitempty"`
+	// +optional
+	Protocols []string `json:"protocols,omitempty" bson:"protocols,omitempty"`
 
 	// Any tags assigned to the file share.
+	// +optional
 	Tags []Tag `json:"tags,omitempty" bson:"tags,omitempty"`
 
 	// The uuid of the snapshot from which the file share is created.

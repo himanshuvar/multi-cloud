@@ -53,22 +53,32 @@ func (f *fileService) ListFileShare(ctx context.Context, in *pb.ListFileShareReq
 	}
 
 	var fileshares []*pb.FileShare
-	for _, item := range res {
+	for _, fs := range res {
+		var tags []*pb.Tag
+		for _, tag := range fs.Tags {
+			tags = append(tags, &pb.Tag{
+				Key:   tag.Key,
+				Value: tag.Value,
+			})
+		}
 		fileshares = append(fileshares, &pb.FileShare{
-			Id:               item.Id.Hex(),
-			Name:             item.Name,
-			Description:      item.Description,
-			TenantId:         item.TenantId,
-			UserId:           item.UserId,
-			BackendId:        item.BackendId,
-			SnapshotId:       item.SnapshotId,
-			Size:             item.Size,
-			Type:             item.Type,
-			Status:           item.Status,
-			Region:           item.Region,
-			AvailabilityZone: item.AvailabilityZone,
-			Encrypted:        item.Encrypted,
-			Metadata:         item.Metadata,
+			Id:               fs.Id.Hex(),
+			Name:             fs.Name,
+			Description:      fs.Description,
+			TenantId:         fs.TenantId,
+			UserId:           fs.UserId,
+			BackendId:        fs.BackendId,
+			Backend:          fs.Backend,
+			Size:             fs.Size,
+			Type:             fs.Type,
+			Status:           fs.Status,
+			Region:           fs.Region,
+			AvailabilityZone: fs.AvailabilityZone,
+			Tags:             tags,
+			Protocols:        fs.Protocols,
+			SnapshotId:       fs.SnapshotId,
+			Encrypted:        fs.Encrypted,
+			Metadata:         fs.Metadata,
 		})
 	}
 	out.Fileshares = fileshares
