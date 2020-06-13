@@ -135,6 +135,21 @@ func (adapter *mongoAdapter) GetFileShare(ctx context.Context, id string) (*mode
 	return fileshare, nil
 }
 
+func (adapter *mongoAdapter) CreateFileShare(ctx context.Context, volume *model.FileShare) (*model.FileShare, error) {
+	session := adapter.session.Copy()
+	defer session.Close()
+
+	if volume.Id == "" {
+		volume.Id = bson.NewObjectId()
+	}
+
+	err := session.DB(DataBaseName).C(FileShareCollection).Insert(volume)
+	if err != nil {
+		return nil, err
+	}
+	return volume, nil
+}
+
 func (adapter *mongoAdapter) DeleteFileShare(ctx context.Context, id string) error {
 	session := adapter.session.Copy()
 	defer session.Close()

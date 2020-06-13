@@ -6,6 +6,7 @@ package file
 import (
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
+	_ "github.com/golang/protobuf/ptypes/struct"
 	math "math"
 )
 
@@ -44,6 +45,7 @@ func NewFileEndpoints() []*api.Endpoint {
 type FileService interface {
 	ListFileShare(ctx context.Context, in *ListFileShareRequest, opts ...client.CallOption) (*ListFileShareResponse, error)
 	GetFileShare(ctx context.Context, in *GetFileShareRequest, opts ...client.CallOption) (*GetFileShareResponse, error)
+	CreateFileShare(ctx context.Context, in *CreateFileShareRequest, opts ...client.CallOption) (*CreateFileShareResponse, error)
 	DeleteFileShare(ctx context.Context, in *DeleteFileShareRequest, opts ...client.CallOption) (*DeleteFileShareResponse, error)
 }
 
@@ -79,6 +81,16 @@ func (c *fileService) GetFileShare(ctx context.Context, in *GetFileShareRequest,
 	return out, nil
 }
 
+func (c *fileService) CreateFileShare(ctx context.Context, in *CreateFileShareRequest, opts ...client.CallOption) (*CreateFileShareResponse, error) {
+	req := c.c.NewRequest(c.name, "File.CreateFileShare", in)
+	out := new(CreateFileShareResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *fileService) DeleteFileShare(ctx context.Context, in *DeleteFileShareRequest, opts ...client.CallOption) (*DeleteFileShareResponse, error) {
 	req := c.c.NewRequest(c.name, "File.DeleteFileShare", in)
 	out := new(DeleteFileShareResponse)
@@ -94,6 +106,7 @@ func (c *fileService) DeleteFileShare(ctx context.Context, in *DeleteFileShareRe
 type FileHandler interface {
 	ListFileShare(context.Context, *ListFileShareRequest, *ListFileShareResponse) error
 	GetFileShare(context.Context, *GetFileShareRequest, *GetFileShareResponse) error
+	CreateFileShare(context.Context, *CreateFileShareRequest, *CreateFileShareResponse) error
 	DeleteFileShare(context.Context, *DeleteFileShareRequest, *DeleteFileShareResponse) error
 }
 
@@ -101,6 +114,7 @@ func RegisterFileHandler(s server.Server, hdlr FileHandler, opts ...server.Handl
 	type file interface {
 		ListFileShare(ctx context.Context, in *ListFileShareRequest, out *ListFileShareResponse) error
 		GetFileShare(ctx context.Context, in *GetFileShareRequest, out *GetFileShareResponse) error
+		CreateFileShare(ctx context.Context, in *CreateFileShareRequest, out *CreateFileShareResponse) error
 		DeleteFileShare(ctx context.Context, in *DeleteFileShareRequest, out *DeleteFileShareResponse) error
 	}
 	type File struct {
@@ -120,6 +134,10 @@ func (h *fileHandler) ListFileShare(ctx context.Context, in *ListFileShareReques
 
 func (h *fileHandler) GetFileShare(ctx context.Context, in *GetFileShareRequest, out *GetFileShareResponse) error {
 	return h.FileHandler.GetFileShare(ctx, in, out)
+}
+
+func (h *fileHandler) CreateFileShare(ctx context.Context, in *CreateFileShareRequest, out *CreateFileShareResponse) error {
+	return h.FileHandler.CreateFileShare(ctx, in, out)
 }
 
 func (h *fileHandler) DeleteFileShare(ctx context.Context, in *DeleteFileShareRequest, out *DeleteFileShareResponse) error {

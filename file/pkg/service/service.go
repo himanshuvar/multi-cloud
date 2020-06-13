@@ -15,26 +15,89 @@
 package service
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"time"
 
+	"github.com/golang/protobuf/jsonpb"
 	"github.com/micro/go-micro/v2/client"
+	"github.com/opensds/multi-cloud/contrib/datastore/drivers"
 	"github.com/opensds/multi-cloud/file/pkg/db"
+	"github.com/opensds/multi-cloud/file/pkg/model"
+	"github.com/opensds/multi-cloud/file/pkg/utils"
+
+	pstruct "github.com/golang/protobuf/ptypes/struct"
+	backend "github.com/opensds/multi-cloud/backend/proto"
 	pb "github.com/opensds/multi-cloud/file/proto"
 	log "github.com/sirupsen/logrus"
 )
 
 type fileService struct {
-	fileClient pb.FileService
+	fileClient    pb.FileService
+	backendClient backend.BackendService
 }
 
 func NewFileService() pb.FileHandler {
 
 	log.Infof("Init file service finished.\n")
 	return &fileService{
-		fileClient: pb.NewFileService("file", client.DefaultClient),
+		fileClient:    pb.NewFileService("file", client.DefaultClient),
+		backendClient: backend.NewBackendService("backend", client.DefaultClient),
 	}
+}
+
+func ToStruct(msg map[string]interface{}) (*pstruct.Struct, error) {
+
+	byteArray, err := json.Marshal(msg)
+
+	if err != nil {
+		return nil, err
+	}
+
+	reader := bytes.NewReader(byteArray)
+
+	pbs := &pstruct.Struct{}
+	if err = jsonpb.Unmarshal(reader, pbs); err != nil {
+		return nil, err
+	}
+
+	return pbs, nil
+}
+
+func ParseStructFields(fields map[string]*pstruct.Value) (map[string]interface{}, error) {
+	log.Infof("Parsing struct fields = [%+v]", fields)
+
+	valuesMap := make(map[string]interface{})
+
+	for key, value := range fields {
+		if v, ok := value.GetKind().(*pstruct.Value_NullValue); ok {
+			valuesMap[key] = v.NullValue
+		} else if v, ok := value.GetKind().(*pstruct.Value_NumberValue); ok {
+			valuesMap[key] = v.NumberValue
+		} else if v, ok := value.GetKind().(*pstruct.Value_StringValue); ok {
+			valuesMap[key] = v.StringValue
+		} else if v, ok := value.GetKind().(*pstruct.Value_BoolValue); ok {
+			valuesMap[key] = v.BoolValue
+		} else if v, ok := value.GetKind().(*pstruct.Value_StructValue); ok {
+			var err error
+			valuesMap[key], err = ParseStructFields(v.StructValue.Fields)
+			if err != nil {
+				log.Errorf("Failed to parse struct Fields = [%+v]", v.StructValue.Fields)
+				return nil, err
+			}
+		} else if v, ok := value.GetKind().(*pstruct.Value_ListValue); ok {
+			valuesMap[key] = v.ListValue
+		} else {
+			msg := fmt.Sprintf("Failed to parse field for key = [%+v], value = [%+v]", key, value)
+			err := errors.New(msg)
+			log.Errorf(msg)
+			return nil, err
+		}
+	}
+	return valuesMap, nil
 }
 
 func (f *fileService) ListFileShare(ctx context.Context, in *pb.ListFileShareRequest, out *pb.ListFileShareResponse) error {
@@ -61,6 +124,11 @@ func (f *fileService) ListFileShare(ctx context.Context, in *pb.ListFileShareReq
 				Value: tag.Value,
 			})
 		}
+		metadata, err := ToStruct(fs.Metadata)
+		if err != nil {
+			log.Error(err)
+			return err
+		}
 		fileshares = append(fileshares, &pb.FileShare{
 			Id:               fs.Id.Hex(),
 			CreatedAt:        fs.CreatedAt,
@@ -71,7 +139,7 @@ func (f *fileService) ListFileShare(ctx context.Context, in *pb.ListFileShareReq
 			UserId:           fs.UserId,
 			BackendId:        fs.BackendId,
 			Backend:          fs.Backend,
-			Size:             fs.Size,
+			Size:             *fs.Size,
 			Type:             fs.Type,
 			Status:           fs.Status,
 			Region:           fs.Region,
@@ -79,8 +147,8 @@ func (f *fileService) ListFileShare(ctx context.Context, in *pb.ListFileShareReq
 			Tags:             tags,
 			Protocols:        fs.Protocols,
 			SnapshotId:       fs.SnapshotId,
-			Encrypted:        fs.Encrypted,
-			Metadata:         fs.Metadata,
+			Encrypted:        *fs.Encrypted,
+			Metadata:         metadata,
 		})
 	}
 	out.Fileshares = fileshares
@@ -105,6 +173,13 @@ func (f *fileService) GetFileShare(ctx context.Context, in *pb.GetFileShareReque
 			Value: tag.Value,
 		})
 	}
+
+	metadata, err := ToStruct(fs.Metadata)
+	if err != nil {
+		log.Error(err)
+		return err
+	}
+
 	out.Fileshare = &pb.FileShare{
 		Id:               fs.Id.Hex(),
 		CreatedAt:        fs.CreatedAt,
@@ -115,7 +190,7 @@ func (f *fileService) GetFileShare(ctx context.Context, in *pb.GetFileShareReque
 		UserId:           fs.UserId,
 		BackendId:        fs.BackendId,
 		Backend:          fs.Backend,
-		Size:             fs.Size,
+		Size:             *fs.Size,
 		Type:             fs.Type,
 		Status:           fs.Status,
 		Region:           fs.Region,
@@ -123,14 +198,111 @@ func (f *fileService) GetFileShare(ctx context.Context, in *pb.GetFileShareReque
 		Tags:             tags,
 		Protocols:        fs.Protocols,
 		SnapshotId:       fs.SnapshotId,
-		Encrypted:        fs.Encrypted,
-		Metadata:         fs.Metadata,
+		Encrypted:        *fs.Encrypted,
+		Metadata:         metadata,
 	}
 	log.Info("Get file share successfully.")
 	return nil
 }
 
-func (f *fileService) DeleteFileShare(ctx  context.Context, in *pb.DeleteFileShareRequest, out *pb.DeleteFileShareResponse) error {
+func (f *fileService) CreateFileShare(ctx context.Context, in *pb.CreateFileShareRequest, out *pb.CreateFileShareResponse) error {
+	log.Info("Received CreateFileShare request.")
+
+	backend, err := utils.GetBackend(ctx, f.backendClient, in.Fileshare.BackendId)
+	if err != nil {
+		log.Errorln("failed to get backend client with err:", err)
+		return err
+	}
+	sd, err := driver.CreateStorageDriver(backend.Backend)
+	if err != nil {
+		log.Errorln("Failed to create Storage driver err:", err)
+		return err
+	}
+
+	fs, err := sd.CreateFileShare(ctx, in)
+	if err != nil {
+		log.Errorf("Received error in creating file shares at backend ", err)
+		return err
+	}
+
+	var tags []model.Tag
+	for _, tag := range in.Fileshare.Tags {
+		tags = append(tags, model.Tag{
+			Key:   tag.Key,
+			Value: tag.Value,
+		})
+	}
+
+	fields := fs.Fileshare.Metadata.GetFields()
+
+	metadata, err := ParseStructFields(fields)
+	if err != nil {
+		log.Errorf("Failed to get metadata: %v", err)
+		return err
+	}
+
+	fileshare := &model.FileShare{
+		Name:               in.Fileshare.Name,
+		Description:        in.Fileshare.Description,
+		TenantId:           in.Fileshare.TenantId,
+		UserId:             in.Fileshare.UserId,
+		BackendId:          in.Fileshare.BackendId,
+		Backend:            backend.Backend.Name,
+		CreatedAt:          time.Now().Format(utils.TimeFormat),
+		UpdatedAt:          time.Now().Format(utils.TimeFormat),
+		Type:               in.Fileshare.Type,
+		Status:             fs.Fileshare.Status,
+		Region:             in.Fileshare.Region,
+		AvailabilityZone:   in.Fileshare.AvailabilityZone,
+		Tags:               tags,
+		Protocols:          in.Fileshare.Protocols,
+		SnapshotId:         in.Fileshare.SnapshotId,
+		Size:               &fs.Fileshare.Size,
+		Encrypted:          &in.Fileshare.Encrypted,
+		EncryptionSettings: fs.Fileshare.EncryptionSettings,
+		Metadata:           metadata,
+	}
+
+	res, err := db.DbAdapter.CreateFileShare(ctx, fileshare)
+	if err != nil {
+		log.Errorf("Failed to create file share: %v", err)
+		return err
+	}
+
+	metadataFS, err := ToStruct(metadata)
+	if err != nil {
+		log.Error(err)
+		return err
+	}
+
+	out.Fileshare = &pb.FileShare{
+		Id:                 res.Id.Hex(),
+		CreatedAt:          res.CreatedAt,
+		UpdatedAt:          res.UpdatedAt,
+		Name:               res.Name,
+		Description:        res.Description,
+		TenantId:           res.TenantId,
+		UserId:             res.UserId,
+		BackendId:          res.BackendId,
+		Backend:            res.Backend,
+		Size:               *res.Size,
+		Type:               res.Type,
+		Status:             res.Status,
+		Region:             res.Region,
+		AvailabilityZone:   res.AvailabilityZone,
+		Tags:               in.Fileshare.Tags,
+		Protocols:          res.Protocols,
+		SnapshotId:         res.SnapshotId,
+		Encrypted:          *res.Encrypted,
+		EncryptionSettings: res.EncryptionSettings,
+		Metadata:           metadataFS,
+	}
+
+	log.Info("Create file share successfully.")
+	return nil
+}
+
+func (f *fileService) DeleteFileShare(ctx context.Context, in *pb.DeleteFileShareRequest, out *pb.DeleteFileShareResponse) error {
 	log.Info("Received DeleteFileShare request.")
 	err := db.DbAdapter.DeleteFileShare(ctx, in.Id)
 	if err != nil {

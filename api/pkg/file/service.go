@@ -15,16 +15,22 @@
 package file
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"net/http"
 
 	"github.com/emicklei/go-restful"
+	"github.com/golang/protobuf/jsonpb"
 	"github.com/micro/go-micro/v2/client"
 	"github.com/opensds/multi-cloud/api/pkg/common"
 	"github.com/opensds/multi-cloud/api/pkg/policy"
 	"github.com/opensds/multi-cloud/backend/proto"
+	"github.com/opensds/multi-cloud/file/pkg/model"
 	"github.com/opensds/multi-cloud/file/proto"
 
+	pstruct "github.com/golang/protobuf/ptypes/struct"
+	c "github.com/opensds/multi-cloud/api/pkg/context"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -36,6 +42,24 @@ const (
 type APIService struct {
 	fileClient   file.FileService
 	backendClient backend.BackendService
+}
+
+func ToStruct(msg map[string]interface{}) (*pstruct.Struct, error) {
+
+	byteArray, err := json.Marshal(msg)
+
+	if err != nil {
+		return nil, err
+	}
+
+	reader := bytes.NewReader(byteArray)
+
+	pbs := &pstruct.Struct{}
+	if err = jsonpb.Unmarshal(reader, pbs); err != nil {
+		return nil, err
+	}
+
+	return pbs, nil
 }
 
 func NewAPIService(c client.Client) *APIService {
@@ -190,6 +214,62 @@ func (s *APIService) GetFileShare(request *restful.Request, response *restful.Re
 	response.WriteEntity(res.Fileshare)
 }
 
+func (s *APIService) CreateFileShare(request *restful.Request, response *restful.Response) {
+	if !policy.Authorize(request, response, "fileshare:create") {
+		return
+	}
+	log.Info("Received request for creating file share.")
+
+	fileshare := &model.FileShare{}
+
+	err := request.ReadEntity(&fileshare)
+	if err != nil {
+		log.Errorf("failed to read request body: %v\n", err)
+		response.WriteError(http.StatusInternalServerError, err)
+		return
+	}
+
+	var tags []*file.Tag
+	for _, tag := range fileshare.Tags {
+		tags = append(tags, &file.Tag{
+			Key:   tag.Key,
+			Value: tag.Value,
+		})
+	}
+
+	metadata, err := ToStruct(fileshare.Metadata)
+
+	fs := &file.FileShare{
+		Name:                 fileshare.Name,
+		Description:          fileshare.Description,
+		Region:               fileshare.Region,
+		AvailabilityZone:     fileshare.AvailabilityZone,
+		Encrypted:            *fileshare.Encrypted,
+		EncryptionSettings:   fileshare.EncryptionSettings,
+		Tags:                 tags,
+		Metadata:             metadata,
+	}
+
+	ctx := common.InitCtxWithAuthInfo(request)
+
+	backendId := request.PathParameter(common.REQUEST_PATH_BACKEND_ID)
+	s.checkBackendExists(ctx, request, response, backendId)
+	fs.BackendId = backendId
+
+	actx := request.Attribute(c.KContext).(*c.Context)
+	fs.TenantId = actx.TenantId
+	fs.UserId = actx.UserId
+	res, err := s.fileClient.CreateFileShare(ctx, &file.CreateFileShareRequest{Fileshare:fs})
+	if err != nil {
+		log.Errorf("failed to create file share: %v\n", err)
+		response.WriteError(http.StatusInternalServerError, err)
+		return
+	}
+
+	log.Info("Create file share successfully.")
+	response.WriteEntity(res.Fileshare)
+}
+
 func (s *APIService) DeleteFileShare(request *restful.Request, response *restful.Response) {
 	if !policy.Authorize(request, response, "fileshare:delete") {
 		return
@@ -205,7 +285,7 @@ func (s *APIService) DeleteFileShare(request *restful.Request, response *restful
 
 	res, err := s.fileClient.DeleteFileShare(ctx, &file.DeleteFileShareRequest{Id: id})
 	if err != nil {
-		log.Errorf("failed to delete file: %v\n", err)
+		log.Errorf("failed to delete file share: %v\n", err)
 		response.WriteError(http.StatusInternalServerError, err)
 		return
 	}
