@@ -162,3 +162,21 @@ func (adapter *mongoAdapter) DeleteFileShare(ctx context.Context, id string) err
 
 	return session.DB(DataBaseName).C(FileShareCollection).Remove(m)
 }
+
+func (adapter *mongoAdapter) UpdateFileShare(ctx context.Context, fs *model.FileShare) (*model.FileShare, error) {
+	session := adapter.session.Copy()
+	defer session.Close()
+
+	m := bson.M{"_id": fs.Id}
+	err := UpdateContextFilter(ctx, m)
+	if err != nil {
+		return nil, err
+	}
+
+	err = session.DB(DataBaseName).C(FileShareCollection).Update(m, fs)
+	if err != nil {
+		return nil, err
+	}
+
+	return fs, nil
+}

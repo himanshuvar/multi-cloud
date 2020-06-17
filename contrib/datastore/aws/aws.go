@@ -18,6 +18,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
@@ -34,6 +35,15 @@ import (
 
 type AwsAdapter struct {
 	session *session.Session
+	worker *Worker
+	fileshare *pb.FileShare
+}
+
+func (ad *AwsAdapter) CreateEFSSession(region, ak, sk string) {
+	ad.session = session.Must(session.NewSession(&aws.Config{
+		Region: aws.String(region),
+		Credentials: credentials.NewStaticCredentials(ak, sk, ""),
+	}))
 }
 
 func ToStruct(msg map[string]interface{}) (*pstruct.Struct, error) {
@@ -53,6 +63,112 @@ func ToStruct(msg map[string]interface{}) (*pstruct.Struct, error) {
 
 	return pbs, nil
 }
+
+// Worker will do its Action once every interval, making up for lost time that
+// happened during the Action by only waiting the time left in the interval.
+type Worker struct {
+	Stopped         bool          // A flag determining the state of the worker
+	ShutdownChannel chan string   // A channel to communicate to the routine
+	Interval        time.Duration // The interval with which to run the Action
+	period          time.Duration // The actual period of the wait
+}
+
+// NewWorker creates a new worker and instantiates all the data structures required.
+func (ad *AwsAdapter) NewAdapterWorker(interval time.Duration) *AwsAdapter {
+	return &AwsAdapter{
+		session: ad.session,
+		worker: &Worker{
+			Stopped:         false,
+			ShutdownChannel: make(chan string),
+			Interval:        interval,
+			period:          interval,
+		},
+		fileshare: &pb.FileShare{},
+	}
+}
+
+// Run starts the worker and listens for a shutdown call.
+func (ad *AwsAdapter) Run(ctx context.Context, fs *pb.GetFileShareRequest) {
+
+	log.Println("Worker Started")
+
+	for {
+		select {
+		case <-ad.worker.ShutdownChannel:
+			ad.worker.ShutdownChannel <- "Down"
+			return
+		case <-time.After(ad.worker.period):
+			break
+		}
+
+		started := time.Now()
+
+		getFs, err := ad.GetFileShare(ctx, fs)
+
+		if err != nil {
+			log.Errorf("Received error in getting file shares at AWS backend ", err)
+		}
+		ad.fileshare = getFs.Fileshare
+
+		finished := time.Now()
+
+		duration := finished.Sub(started)
+		ad.worker.period = ad.worker.Interval - duration
+	}
+
+}
+
+// Shutdown is a graceful shutdown mechanism
+func (ad *AwsAdapter) Shutdown() {
+	ad.worker.Stopped = true
+
+	ad.worker.ShutdownChannel <- "Down"
+	<-ad.worker.ShutdownChannel
+
+	close(ad.worker.ShutdownChannel)
+}
+
+func (ad *AwsAdapter) ParseFileShare(fsDesc *efs.FileSystemDescription) (*pb.FileShare, error) {
+	meta := map[string]interface{}{
+		"Name": *fsDesc.Name,
+		"FileSystemId": *fsDesc.FileSystemId,
+		"OwnerId": *fsDesc.OwnerId,
+		"FileSystemSize":  *fsDesc.SizeInBytes,
+		"ThroughputMode": *fsDesc.ThroughputMode,
+		"PerformanceMode": *fsDesc.PerformanceMode,
+		"CreationToken": *fsDesc.CreationToken,
+		"CreationTimeAtBackend": *fsDesc.CreationTime,
+		"LifeCycleState": *fsDesc.LifeCycleState,
+		"NumberOfMountTargets": *fsDesc.NumberOfMountTargets,
+	}
+
+	if *fsDesc.ThroughputMode == efs.ThroughputModeProvisioned {
+		meta["ProvisionedThroughputInMibps"] = *fsDesc.ProvisionedThroughputInMibps
+	}
+
+	metadata, err := ToStruct(meta)
+
+	if err != nil {
+		log.Error(err)
+		return nil, err
+	}
+
+	fileshare := &pb.FileShare{
+		Size:                 *fsDesc.SizeInBytes.Value,
+		Encrypted:            *fsDesc.Encrypted,
+		Status:               *fsDesc.LifeCycleState,
+		Metadata: metadata,
+	}
+
+	if *fsDesc.Encrypted {
+		fileshare.EncryptionSettings = map[string]string {
+			"KmsKeyId": *fsDesc.KmsKeyId,
+		}
+	}
+
+	return fileshare, nil
+}
+
 
 func (ad *AwsAdapter) CreateFileShare(ctx context.Context, fs *pb.CreateFileShareRequest) (*pb.CreateFileShareResponse, error) {
 	// Create a EFS client from just a session.
@@ -111,54 +227,69 @@ func (ad *AwsAdapter) CreateFileShare(ctx context.Context, fs *pb.CreateFileShar
 
 	log.Infof("Create File share response = %+v", result)
 
-	myVar := map[string]interface{}{
-		"Name": *result.Name,
-		"FileSystemId": *result.FileSystemId,
-		"OwnerId": *result.OwnerId,
-		"FileSystemSize":  *result.SizeInBytes,
-		"ThroughputMode": *result.ThroughputMode,
-		"PerformanceMode": *result.PerformanceMode,
-		"CreationToken": *result.CreationToken,
-		"CreationTimeAtBackend": *result.CreationTime,
-		"LifeCycleState": *result.LifeCycleState,
-		"NumberOfMountTargets": *result.NumberOfMountTargets,
+	fileShare, err := ad.ParseFileShare(result)
+
+	if err != nil {
+		log.Error(err)
+		return nil, err
+	}
+/*
+	worker := ad.NewAdapterWorker(2 * time.Second)
+	fsInput := &pb.GetFileShareRequest{Fileshare:fileShare}
+	go worker.Run(ctx, fsInput)
+	time.Sleep(2 * time.Second)
+	worker.Shutdown()
+	time.Sleep(1 * time.Second)
+
+	return &pb.CreateFileShareResponse{
+		Fileshare: worker.fileshare,
+	}, nil
+	*/
+
+	return &pb.CreateFileShareResponse{
+		Fileshare: fileShare,
+	}, nil
+}
+
+func (ad *AwsAdapter) GetFileShare(ctx context.Context, fs *pb.GetFileShareRequest) (*pb.GetFileShareResponse, error) {
+	// Create a EFS client from just a session.
+	svc := efs.New(ad.session)
+
+	input := &efs.DescribeFileSystemsInput{
+		FileSystemId: aws.String(fs.Fileshare.Metadata.Fields["FileSystemId"].GetStringValue()),
 	}
 
-	if *result.ThroughputMode == efs.ThroughputModeProvisioned {
-		myVar["ProvisionedThroughputInMibps"] = *result.ProvisionedThroughputInMibps
+	result, err := svc.DescribeFileSystems(input)
+	if err != nil {
+		if aerr, ok := err.(awserr.Error); ok {
+			switch aerr.Code() {
+			case efs.ErrCodeBadRequest:
+				log.Errorf(efs.ErrCodeBadRequest, aerr.Error())
+			case efs.ErrCodeInternalServerError:
+				log.Errorf(efs.ErrCodeInternalServerError, aerr.Error())
+			case efs.ErrCodeFileSystemNotFound:
+				log.Errorf(efs.ErrCodeFileSystemNotFound, aerr.Error())
+			default:
+				log.Errorf(aerr.Error())
+			}
+		} else {
+			log.Error(err)
+		}
+		return nil, err
 	}
 
-	metadata, err := ToStruct(myVar)
+	log.Infof("Get File share response = %+v", result)
+
+	fileShare, err := ad.ParseFileShare(result.FileSystems[0])
 
 	if err != nil {
 		log.Error(err)
 		return nil, err
 	}
 
-	fileshare := &pb.FileShare{
-		Size:                 *result.SizeInBytes.Value,
-		Encrypted:            *result.Encrypted,
-		Status:               *result.LifeCycleState,
-		Metadata: metadata,
-	}
-
-	if *result.Encrypted {
-		fileshare.EncryptionSettings = map[string]string {
-				"KmsKeyId": *result.KmsKeyId,
-		}
-	}
-
-	return &pb.CreateFileShareResponse{
-		Fileshare: fileshare,
+	return &pb.GetFileShareResponse{
+		Fileshare: fileShare,
 	}, nil
-}
-
-
-func (ad *AwsAdapter) CreateEFSSession(region, ak, sk string) {
-	ad.session = session.Must(session.NewSession(&aws.Config{
-		Region: aws.String(region),
-		Credentials: credentials.NewStaticCredentials(ak, sk, ""),
-	}))
 }
 
 func (ad *AwsAdapter) Close() error {

@@ -88,6 +88,7 @@ message ListFileShareResponse {
 
 message GetFileShareRequest {
     string id = 1;
+    FileShare fileshare = 2;
 }
 
 message GetFileShareResponse {

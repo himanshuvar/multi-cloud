@@ -27,6 +27,32 @@ const (
 	TimeFormat = `2006-01-02T15:04:05`
 )
 
+const (
+	// FileShareStateCreating is a FileShareState enum value
+	FileShareStateCreating = "creating"
+
+	// FileShareStateAvailable is a FileShareState enum value
+	FileShareStateAvailable = "available"
+
+	// FileShareStateInUse is a FileShareState enum value
+	FileShareStateInUse = "inUse"
+
+	// FileShareStateError is a FileShareState enum value
+	FileShareStateError = "error"
+
+	// FileShareStateUpdating is a FileShareState enum value
+	FileShareStateUpdating = "updating"
+
+	// FileShareStateDeleting is a FileShareState enum value
+	FileShareStateDeleting = "deleting"
+
+	// FileShareStateErrorDeleting is a FileShareState enum value
+	FileShareStateErrorDeleting = "errorDeleting"
+
+	// FileShareStateDeleted is a FileShareState enum value
+	FileShareStateDeleted = "deleted"
+)
+
 func GetBackend(ctx context.Context, backendClient backend.BackendService,
 	backendId string) (*backend.GetBackendResponse, error){
 	backend, err := backendClient.GetBackend(ctx, &backend.GetBackendRequest{Id: backendId})

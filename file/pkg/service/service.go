@@ -148,6 +148,7 @@ func (f *fileService) ListFileShare(ctx context.Context, in *pb.ListFileShareReq
 			Protocols:        fs.Protocols,
 			SnapshotId:       fs.SnapshotId,
 			Encrypted:        *fs.Encrypted,
+			EncryptionSettings: fs.EncryptionSettings,
 			Metadata:         metadata,
 		})
 	}
@@ -199,6 +200,7 @@ func (f *fileService) GetFileShare(ctx context.Context, in *pb.GetFileShareReque
 		Protocols:        fs.Protocols,
 		SnapshotId:       fs.SnapshotId,
 		Encrypted:        *fs.Encrypted,
+		EncryptionSettings: fs.EncryptionSettings,
 		Metadata:         metadata,
 	}
 	log.Info("Get file share successfully.")
@@ -222,8 +224,11 @@ func (f *fileService) CreateFileShare(ctx context.Context, in *pb.CreateFileShar
 	fs, err := sd.CreateFileShare(ctx, in)
 	if err != nil {
 		log.Errorf("Received error in creating file shares at backend ", err)
-		return err
+		fs.Fileshare.Status = utils.FileShareStateError
+	} else{
+		fs.Fileshare.Status = utils.FileShareStateCreating
 	}
+
 
 	var tags []model.Tag
 	for _, tag := range in.Fileshare.Tags {
@@ -296,6 +301,39 @@ func (f *fileService) CreateFileShare(ctx context.Context, in *pb.CreateFileShar
 		Encrypted:          *res.Encrypted,
 		EncryptionSettings: res.EncryptionSettings,
 		Metadata:           metadataFS,
+	}
+
+	time.Sleep(4 * time.Second)
+	fsInput := &pb.GetFileShareRequest{Fileshare:out.Fileshare}
+
+	getFs, err := sd.GetFileShare(ctx, fsInput)
+	if err != nil {
+		log.Errorf("Received error in getting file shares at backend ", err)
+		return err
+	}
+
+	log.Infof("Get File share response = [%+v]", getFs)
+
+	fields = getFs.Fileshare.Metadata.GetFields()
+
+	metadata, err = ParseStructFields(fields)
+	if err != nil {
+		log.Errorf("Failed to get metadata: %v", err)
+		return err
+	}
+
+	fileshare.Id = res.Id
+	fileshare.Status = getFs.Fileshare.Status
+	fileshare.Size = &getFs.Fileshare.Size
+	fileshare.Encrypted = &getFs.Fileshare.Encrypted
+	fileshare.EncryptionSettings = getFs.Fileshare.EncryptionSettings
+	fileshare.Metadata = metadata
+	fileshare.UpdatedAt = time.Now().Format(utils.TimeFormat)
+
+	res, err = db.DbAdapter.UpdateFileShare(ctx, fileshare)
+	if err != nil {
+		log.Errorf("Failed to update file share: %v", err)
+		return err
 	}
 
 	log.Info("Create file share successfully.")
