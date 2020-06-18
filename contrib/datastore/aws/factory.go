@@ -31,6 +31,5 @@ func (factory *AwsFSDriverFactory) CreateDriver(backend *backendpb.BackendDetail
 }
 
 func init() {
-	log.Infof("Himanshu Register Factory")
 	driver.RegisterDriverFactory(constants.BackendTypeAwsFile, &AwsFSDriverFactory{})
 }

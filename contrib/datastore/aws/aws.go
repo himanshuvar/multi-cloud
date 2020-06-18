@@ -18,11 +18,9 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
-	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/efs"
 	"github.com/golang/protobuf/jsonpb"
@@ -35,6 +33,11 @@ import (
 
 type AwsAdapter struct {
 	session *session.Session
+}
+
+/*
+type AwsAdapter struct {
+	session *session.Session
 	worker *Worker
 	fileshare *pb.FileShare
 }
@@ -45,6 +48,7 @@ func (ad *AwsAdapter) CreateEFSSession(region, ak, sk string) {
 		Credentials: credentials.NewStaticCredentials(ak, sk, ""),
 	}))
 }
+*/
 
 func ToStruct(msg map[string]interface{}) (*pstruct.Struct, error) {
 
@@ -63,7 +67,7 @@ func ToStruct(msg map[string]interface{}) (*pstruct.Struct, error) {
 
 	return pbs, nil
 }
-
+/*
 // Worker will do its Action once every interval, making up for lost time that
 // happened during the Action by only waiting the time left in the interval.
 type Worker struct {
@@ -127,8 +131,17 @@ func (ad *AwsAdapter) Shutdown() {
 
 	close(ad.worker.ShutdownChannel)
 }
+*/
 
 func (ad *AwsAdapter) ParseFileShare(fsDesc *efs.FileSystemDescription) (*pb.FileShare, error) {
+	var tags []*pb.Tag
+	for _, tag := range fsDesc.Tags {
+		tags = append(tags, &pb.Tag{
+			Key:   *tag.Key,
+			Value: *tag.Value,
+		})
+	}
+
 	meta := map[string]interface{}{
 		"Name": *fsDesc.Name,
 		"FileSystemId": *fsDesc.FileSystemId,
@@ -157,7 +170,8 @@ func (ad *AwsAdapter) ParseFileShare(fsDesc *efs.FileSystemDescription) (*pb.Fil
 		Size:                 *fsDesc.SizeInBytes.Value,
 		Encrypted:            *fsDesc.Encrypted,
 		Status:               *fsDesc.LifeCycleState,
-		Metadata: metadata,
+		Tags:                 tags,
+		Metadata:             metadata,
 	}
 
 	if *fsDesc.Encrypted {
@@ -169,6 +183,30 @@ func (ad *AwsAdapter) ParseFileShare(fsDesc *efs.FileSystemDescription) (*pb.Fil
 	return fileshare, nil
 }
 
+func (ad *AwsAdapter) DescribeFileShare(input *efs.DescribeFileSystemsInput) (*efs.DescribeFileSystemsOutput, error) {
+	// Create a EFS client from just a session.
+	svc := efs.New(ad.session)
+
+	result, err := svc.DescribeFileSystems(input)
+	if err != nil {
+		if aerr, ok := err.(awserr.Error); ok {
+			switch aerr.Code() {
+			case efs.ErrCodeBadRequest:
+				log.Errorf(efs.ErrCodeBadRequest, aerr.Error())
+			case efs.ErrCodeInternalServerError:
+				log.Errorf(efs.ErrCodeInternalServerError, aerr.Error())
+			case efs.ErrCodeFileSystemNotFound:
+				log.Errorf(efs.ErrCodeFileSystemNotFound, aerr.Error())
+			default:
+				log.Errorf(aerr.Error())
+			}
+		} else {
+			log.Error(err)
+		}
+		return nil, err
+	}
+	return result, nil
+}
 
 func (ad *AwsAdapter) CreateFileShare(ctx context.Context, fs *pb.CreateFileShareRequest) (*pb.CreateFileShareResponse, error) {
 	// Create a EFS client from just a session.
@@ -252,29 +290,14 @@ func (ad *AwsAdapter) CreateFileShare(ctx context.Context, fs *pb.CreateFileShar
 }
 
 func (ad *AwsAdapter) GetFileShare(ctx context.Context, fs *pb.GetFileShareRequest) (*pb.GetFileShareResponse, error) {
-	// Create a EFS client from just a session.
-	svc := efs.New(ad.session)
 
 	input := &efs.DescribeFileSystemsInput{
 		FileSystemId: aws.String(fs.Fileshare.Metadata.Fields["FileSystemId"].GetStringValue()),
 	}
 
-	result, err := svc.DescribeFileSystems(input)
+	result, err := ad.DescribeFileShare(input)
 	if err != nil {
-		if aerr, ok := err.(awserr.Error); ok {
-			switch aerr.Code() {
-			case efs.ErrCodeBadRequest:
-				log.Errorf(efs.ErrCodeBadRequest, aerr.Error())
-			case efs.ErrCodeInternalServerError:
-				log.Errorf(efs.ErrCodeInternalServerError, aerr.Error())
-			case efs.ErrCodeFileSystemNotFound:
-				log.Errorf(efs.ErrCodeFileSystemNotFound, aerr.Error())
-			default:
-				log.Errorf(aerr.Error())
-			}
-		} else {
-			log.Error(err)
-		}
+		log.Error(err)
 		return nil, err
 	}
 
@@ -291,6 +314,34 @@ func (ad *AwsAdapter) GetFileShare(ctx context.Context, fs *pb.GetFileShareReque
 		Fileshare: fileShare,
 	}, nil
 }
+
+func (ad *AwsAdapter) ListFileShare(ctx context.Context, in *pb.ListFileShareRequest) (*pb.ListFileShareResponse, error) {
+
+	input := &efs.DescribeFileSystemsInput{}
+
+	result, err := ad.DescribeFileShare(input)
+	if err != nil {
+		log.Error(err)
+		return nil, err
+	}
+
+	log.Infof("Get File share response = %+v", result)
+
+	var fileshares []*pb.FileShare
+	for _, fileshare := range result.FileSystems {
+		fs, err := ad.ParseFileShare(fileshare)
+		if err != nil {
+			log.Error(err)
+			return nil, err
+		}
+		fileshares = append(fileshares, fs)
+	}
+
+	return &pb.ListFileShareResponse{
+		Fileshares: fileshares,
+	}, nil
+}
+
 
 func (ad *AwsAdapter) Close() error {
 	// TODO:

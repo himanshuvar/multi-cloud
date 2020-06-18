@@ -1,7 +1,6 @@
 package driver
 
 import (
-	"github.com/micro/go-micro/v2/util/log"
 	backendpb "github.com/opensds/multi-cloud/backend/proto"
 	exp "github.com/opensds/multi-cloud/s3/pkg/exception"
 )
@@ -17,8 +16,6 @@ func RegisterDriverFactory(driverType string, factory DriverFactory) {
 }
 
 func CreateStorageDriver(backend *backendpb.BackendDetail) (StorageDriver, error) {
-	log.Infof("Himanshu Register Backend %+v", backend)
-	log.Infof("Himanshu Register Map %+v", driverFactoryMgr)
 	if factory, ok := driverFactoryMgr[backend.Type]; ok {
 		return factory.CreateDriver(backend)
 	}
