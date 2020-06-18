@@ -67,6 +67,7 @@ func ToStruct(msg map[string]interface{}) (*pstruct.Struct, error) {
 
 	return pbs, nil
 }
+
 /*
 // Worker will do its Action once every interval, making up for lost time that
 // happened during the Action by only waiting the time left in the interval.

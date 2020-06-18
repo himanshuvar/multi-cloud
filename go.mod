@@ -3,7 +3,9 @@ module github.com/opensds/multi-cloud
 go 1.13
 
 require (
+	github.com/Azure/azure-pipeline-go v0.2.1
 	github.com/Azure/azure-storage-blob-go v0.8.0
+	github.com/Azure/azure-storage-file-go v0.7.0
 	github.com/BurntSushi/toml v0.3.1
 	github.com/Shopify/sarama v1.19.0
 	github.com/aliyun/aliyun-oss-go-sdk v2.0.8+incompatible
