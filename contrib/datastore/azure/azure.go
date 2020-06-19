@@ -20,17 +20,17 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/golang/protobuf/jsonpb"
-	"github.com/opensds/multi-cloud/contrib/utils"
 	"net/url"
 	"strconv"
 	"time"
 
 	"github.com/Azure/azure-pipeline-go/pipeline"
-	_ "github.com/Azure/azure-sdk-for-go/storage"
+	"github.com/Azure/azure-sdk-for-go/storage"
 	"github.com/Azure/azure-storage-file-go/azfile"
+	"github.com/golang/protobuf/jsonpb"
 	pstruct "github.com/golang/protobuf/ptypes/struct"
 	backendpb "github.com/opensds/multi-cloud/backend/proto"
+	"github.com/opensds/multi-cloud/contrib/utils"
 	file "github.com/opensds/multi-cloud/file/proto"
 	log "github.com/sirupsen/logrus"
 )
@@ -44,6 +44,24 @@ type AzureAdapter struct {
 }
 
 func ToStruct(msg map[string][]string) (*pstruct.Struct, error) {
+
+	byteArray, err := json.Marshal(msg)
+
+	if err != nil {
+		return nil, err
+	}
+
+	reader := bytes.NewReader(byteArray)
+
+	pbs := &pstruct.Struct{}
+	if err = jsonpb.Unmarshal(reader, pbs); err != nil {
+		return nil, err
+	}
+
+	return pbs, nil
+}
+
+func ToStructMap(msg map[string]string) (*pstruct.Struct, error) {
 
 	byteArray, err := json.Marshal(msg)
 
@@ -77,6 +95,27 @@ func ToAzureMetadata(pbs *pstruct.Struct) (azfile.Metadata, error) {
 		}
 	}
 	return valuesMap, nil
+}
+
+func (ad *AzureAdapter) ParseFileShare(fs storage.Share) (*file.FileShare, error) {
+
+	meta := fs.Metadata
+	meta["Etag"] = fs.Properties.Etag
+	meta["Last-Modified"] = fs.Properties.LastModified
+	meta["URL"] = fs.URL()
+
+	metadata, err := ToStructMap(meta)
+	if err != nil {
+		log.Error(err)
+		return nil, err
+	}
+
+	fileshare := &file.FileShare{
+		Name:                 fs.Name,
+		Size:                 int64(fs.Properties.Quota),
+		Metadata:             metadata,
+	}
+	return fileshare, nil
 }
 
 
@@ -245,7 +284,31 @@ func (ad *AzureAdapter) GetFileShare(ctx context.Context, fs *file.GetFileShareR
 }
 
 func (ad *AzureAdapter) ListFileShare(ctx context.Context, fs *file.ListFileShareRequest) (*file.ListFileShareResponse, error) {
-	panic("implement me")
+	// List file share
+	basicClient, err := storage.NewBasicClient(ad.backend.Access, ad.backend.Security)
+	if err != nil {
+		fmt.Println("Error in getting client")
+		return nil, err
+	}
+	fsc := basicClient.GetFileService()
+	result, err := fsc.ListShares(storage.ListSharesParameters{})
+	if err != nil {
+		fmt.Println("Error in response")
+		return nil, err
+	}
+	log.Infof("List File share response = %+v", result)
+
+	var fileshares []*file.FileShare
+	for _, fileshare := range result.Shares {
+		fs, err := ad.ParseFileShare(fileshare)
+		if err != nil {
+			log.Error(err)
+			return nil, err
+		}
+		fileshares = append(fileshares, fs)
+	}
+
+	return &file.ListFileShareResponse{}, nil
 }
 
 /*
