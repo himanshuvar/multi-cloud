@@ -242,6 +242,7 @@ func (s *APIService) CreateFileShare(request *restful.Request, response *restful
 	fs := &file.FileShare{
 		Name:                 fileshare.Name,
 		Description:          fileshare.Description,
+		Size:                 *fileshare.Size,
 		Region:               fileshare.Region,
 		AvailabilityZone:     fileshare.AvailabilityZone,
 		Encrypted:            *fileshare.Encrypted,

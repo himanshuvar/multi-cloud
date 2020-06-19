@@ -25,6 +25,12 @@ const (
 	// It's RFC 8601 format that decodes and encodes with
 	// exactly precision to seconds.
 	TimeFormat = `2006-01-02T15:04:05`
+
+	AZURE_FILESHARE_USAGE_BYTES = "Share-Usage-Bytes"
+
+	AZURE_X_MS_SHARE_QUOTA = "X-Ms-Share-Quota"
+
+	CONTENT_LENGTH = "Content-Length"
 )
 
 const (

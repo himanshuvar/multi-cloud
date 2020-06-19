@@ -20,6 +20,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/golang/protobuf/jsonpb"
@@ -34,6 +36,8 @@ import (
 	pb "github.com/opensds/multi-cloud/file/proto"
 	log "github.com/sirupsen/logrus"
 )
+
+var listFields map[string]*pstruct.Value
 
 type fileService struct {
 	fileClient    pb.FileService
@@ -78,7 +82,17 @@ func ParseStructFields(fields map[string]*pstruct.Value) (map[string]interface{}
 		} else if v, ok := value.GetKind().(*pstruct.Value_NumberValue); ok {
 			valuesMap[key] = v.NumberValue
 		} else if v, ok := value.GetKind().(*pstruct.Value_StringValue); ok {
-			valuesMap[key] = v.StringValue
+			val := strings.Trim(v.StringValue, "\"")
+			if key == utils.AZURE_FILESHARE_USAGE_BYTES || key == utils.AZURE_X_MS_SHARE_QUOTA || key == utils.CONTENT_LENGTH {
+				valInt, err :=  strconv.ParseInt(val, 10, 64)
+				if err != nil {
+					log.Errorf("Failed to parse string Fields = ", key)
+					return nil, err
+				}
+				valuesMap[key] = valInt
+			} else {
+				valuesMap[key] = val
+			}
 		} else if v, ok := value.GetKind().(*pstruct.Value_BoolValue); ok {
 			valuesMap[key] = v.BoolValue
 		} else if v, ok := value.GetKind().(*pstruct.Value_StructValue); ok {
@@ -89,7 +103,7 @@ func ParseStructFields(fields map[string]*pstruct.Value) (map[string]interface{}
 				return nil, err
 			}
 		} else if v, ok := value.GetKind().(*pstruct.Value_ListValue); ok {
-			valuesMap[key] = v.ListValue
+			listFields[key] = v.ListValue.Values[0]
 		} else {
 			msg := fmt.Sprintf("Failed to parse field for key = [%+v], value = [%+v]", key, value)
 			err := errors.New(msg)
@@ -229,7 +243,6 @@ func (f *fileService) CreateFileShare(ctx context.Context, in *pb.CreateFileShar
 		fs.Fileshare.Status = utils.FileShareStateCreating
 	}
 
-
 	var tags []model.Tag
 	for _, tag := range in.Fileshare.Tags {
 		tags = append(tags, model.Tag{
@@ -238,6 +251,8 @@ func (f *fileService) CreateFileShare(ctx context.Context, in *pb.CreateFileShar
 		})
 	}
 
+	listFields = make(map[string]*pstruct.Value)
+
 	fields := fs.Fileshare.Metadata.GetFields()
 
 	metadata, err := ParseStructFields(fields)
@@ -245,6 +260,18 @@ func (f *fileService) CreateFileShare(ctx context.Context, in *pb.CreateFileShar
 		log.Errorf("Failed to get metadata: %v", err)
 		return err
 	}
+	if len(listFields) != 0 {
+		meta, err := ParseStructFields(listFields)
+		if err != nil {
+			log.Errorf("Failed to get array for metadata : %v", err)
+			return err
+		}
+		for k, v := range meta {
+			metadata[k] = v
+		}
+	}
+
+	log.Infof("FS Model Metadata: %+v", metadata)
 
 	fileshare := &model.FileShare{
 		Name:               in.Fileshare.Name,
@@ -267,6 +294,8 @@ func (f *fileService) CreateFileShare(ctx context.Context, in *pb.CreateFileShar
 		EncryptionSettings: fs.Fileshare.EncryptionSettings,
 		Metadata:           metadata,
 	}
+
+	log.Infof("FS Model: %+v", fileshare)
 
 	res, err := db.DbAdapter.CreateFileShare(ctx, fileshare)
 	if err != nil {
@@ -303,7 +332,7 @@ func (f *fileService) CreateFileShare(ctx context.Context, in *pb.CreateFileShar
 		Metadata:           metadataFS,
 	}
 
-	time.Sleep(4 * time.Second)
+	//time.Sleep(4 * time.Second)
 	fsInput := &pb.GetFileShareRequest{Fileshare:out.Fileshare}
 
 	getFs, err := sd.GetFileShare(ctx, fsInput)
@@ -314,6 +343,8 @@ func (f *fileService) CreateFileShare(ctx context.Context, in *pb.CreateFileShar
 
 	log.Infof("Get File share response = [%+v]", getFs)
 
+	listFields = make(map[string]*pstruct.Value)
+
 	fields = getFs.Fileshare.Metadata.GetFields()
 
 	metadata, err = ParseStructFields(fields)
@@ -322,6 +353,19 @@ func (f *fileService) CreateFileShare(ctx context.Context, in *pb.CreateFileShar
 		return err
 	}
 
+	if len(listFields) != 0 {
+		meta, err := ParseStructFields(listFields)
+		if err != nil {
+			log.Errorf("Failed to get array for metadata : %v", err)
+			return err
+		}
+		for k, v := range meta {
+			metadata[k] = v
+		}
+	}
+
+	log.Infof("For Update FS Model Metadata: %+v", metadata)
+
 	fileshare.Id = res.Id
 	fileshare.Status = getFs.Fileshare.Status
 	fileshare.Size = &getFs.Fileshare.Size
@@ -329,6 +373,8 @@ func (f *fileService) CreateFileShare(ctx context.Context, in *pb.CreateFileShar
 	fileshare.EncryptionSettings = getFs.Fileshare.EncryptionSettings
 	fileshare.Metadata = metadata
 	fileshare.UpdatedAt = time.Now().Format(utils.TimeFormat)
+
+	log.Infof("For Update FS Model: %+v", fileshare)
 
 	res, err = db.DbAdapter.UpdateFileShare(ctx, fileshare)
 	if err != nil {

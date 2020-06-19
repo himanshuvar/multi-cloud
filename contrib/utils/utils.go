@@ -19,10 +19,16 @@ import (
 	"time"
 )
 
-const charset = "abcdefghijklmnopqrstuvwxyz" +
-	"ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
-	"0123456789" +
-	"~=+%^*/()[]{}/!@#$?|"
+const (
+	GB_FACTOR = 1024 * 1024 * 1024
+
+    AZURE_FILESHARE_USAGE_BYTES = "Share-Usage-Bytes"
+
+	charset = "abcdefghijklmnopqrstuvwxyz" +
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+		"0123456789" +
+		"~=+%^*/()[]{}/!@#$?|"
+)
 
 func RandString(length int) string {
 	randVal := rand.New(rand.NewSource(time.Now().UnixNano()))

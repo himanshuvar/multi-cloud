@@ -15,13 +15,19 @@
 package azure
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/golang/protobuf/jsonpb"
+	"github.com/opensds/multi-cloud/contrib/utils"
 	"net/url"
+	"strconv"
 	"time"
 
 	"github.com/Azure/azure-pipeline-go/pipeline"
+	_ "github.com/Azure/azure-sdk-for-go/storage"
 	"github.com/Azure/azure-storage-file-go/azfile"
 	pstruct "github.com/golang/protobuf/ptypes/struct"
 	backendpb "github.com/opensds/multi-cloud/backend/proto"
@@ -35,6 +41,24 @@ var MaxTimeForSingleHttpRequest = 50 * time.Minute
 type AzureAdapter struct {
 	backend      *backendpb.BackendDetail
 	pipeline      pipeline.Pipeline
+}
+
+func ToStruct(msg map[string][]string) (*pstruct.Struct, error) {
+
+	byteArray, err := json.Marshal(msg)
+
+	if err != nil {
+		return nil, err
+	}
+
+	reader := bytes.NewReader(byteArray)
+
+	pbs := &pstruct.Struct{}
+	if err = jsonpb.Unmarshal(reader, pbs); err != nil {
+		return nil, err
+	}
+
+	return pbs, nil
 }
 
 func ToAzureMetadata(pbs *pstruct.Struct) (azfile.Metadata, error) {
@@ -77,9 +101,58 @@ func (ad *AzureAdapter) createPipeline(endpoint string, acountName string, accou
 func (ad *AzureAdapter) createFileShareURL(fileshareName string) (azfile.ShareURL, error) {
 
 	//create fileShareURL
-	URL, _ := url.Parse(ad.backend.Endpoint + fileshareName)
+	URL, _ := url.Parse(fmt.Sprintf("%s%s", ad.backend.Endpoint, fileshareName))
+	//URL.Query().Set("timeout","20")
 
 	return azfile.NewShareURL(*URL, ad.pipeline), nil
+}
+
+func (ad *AzureAdapter) GetFileShareProperties(ctx context.Context, fileshareName string) (*azfile.ShareGetPropertiesResponse, error) {
+
+	shareURL, err := ad.createFileShareURL(fileshareName)
+	if err != nil {
+		log.Errorf("Create Azure File Share URL failed, err:%v\n", err)
+		return nil, err
+	}
+
+	result, err := shareURL.GetProperties(ctx)
+	if err != nil {
+		log.Errorf("Get Azure File Share Properties failed, err:%v\n", err)
+		return nil, err
+	}
+	return result, nil
+}
+
+func (ad *AzureAdapter) GetFileShareStatistics(ctx context.Context, fileshareName string) (*azfile.ShareStats, error) {
+
+	shareURL, err := ad.createFileShareURL(fileshareName)
+	if err != nil {
+		log.Errorf("Create Azure File Share URL failed, err:%v\n", err)
+		return nil, err
+	}
+
+	result, err := shareURL.GetStatistics(ctx)
+	if err != nil {
+		log.Errorf("Get Azure File Share Statistics failed, err:%v\n", err)
+		return nil, err
+	}
+	return result, nil
+}
+
+func (ad *AzureAdapter) GetFileSharePermissions(ctx context.Context, fileshareName string) (*azfile.SignedIdentifiers, error) {
+
+	shareURL, err := ad.createFileShareURL(fileshareName)
+	if err != nil {
+		log.Errorf("Create Azure File Share URL failed, err:%v\n", err)
+		return nil, err
+	}
+
+	result, err := shareURL.GetPermissions(ctx)
+	if err != nil {
+		log.Errorf("Get Azure File Share Permissions failed, err:%v\n", err)
+		return nil, err
+	}
+	return result, nil
 }
 
 func (ad *AzureAdapter) CreateFileShare(ctx context.Context, fs *file.CreateFileShareRequest) (*file.CreateFileShareResponse, error) {
@@ -91,7 +164,7 @@ func (ad *AzureAdapter) CreateFileShare(ctx context.Context, fs *file.CreateFile
 		return nil, err
 	}
 
-	//result, err := shareURL.Create(ctx, azfile.Metadata{"createdby": "AKS"}, int32(fs.Fileshare.Size))
+	//result, err := shareURL.Create(ctx, azfile.Metadata{"createdby": "AKS"}, 2)
 
 	metadata, err := ToAzureMetadata(fs.Fileshare.Metadata)
 	if err != nil {
@@ -101,15 +174,74 @@ func (ad *AzureAdapter) CreateFileShare(ctx context.Context, fs *file.CreateFile
 
 	result, err := shareURL.Create(ctx, metadata, int32(fs.Fileshare.Size))
 	if err != nil {
-		log.Fatal(err)
+		log.Error(err)
+		return nil, err
 	}
-	log.Infof("Create File share response = %+v", result)
+	log.Infof("Create File share response = %+v", result.Response().Header)
 
-	return nil, nil
+
+	meta, err := ToStruct(result.Response().Header)
+	if err != nil {
+		log.Error(err)
+		return nil, err
+	}
+
+	log.Infof("Create File share metadata = %+v", meta)
+
+	//ListFileshares(ad.backend.Access, ad.backend.Security)
+
+	return &file.CreateFileShareResponse{
+		Fileshare: &file.FileShare{
+			Name:                 fs.Fileshare.Name,
+			Size:                 fs.Fileshare.Size * utils.GB_FACTOR,
+			Status:               "creating",
+			Metadata:             meta,
+		},
+	}, nil
 }
 
 func (ad *AzureAdapter) GetFileShare(ctx context.Context, fs *file.GetFileShareRequest) (*file.GetFileShareResponse, error) {
-	panic("implement me")
+
+	getFS, err := ad.GetFileShareProperties(ctx, fs.Fileshare.Name)
+	if err != nil {
+		log.Error(err)
+		return nil, err
+	}
+	log.Infof("Get File share response = %+v", getFS.Response().Header)
+
+	getFSstats, err := ad.GetFileShareStatistics(ctx, fs.Fileshare.Name)
+	if err != nil {
+		log.Error(err)
+		return nil, err
+	}
+	log.Infof("Get File share stats response = %+v", getFSstats.Response().Header)
+	log.Infof("Get File share stats response Bytes = %+v", getFSstats.ShareUsageBytes)
+/*
+	getFSperm, err := ad.GetFileSharePermissions(ctx, fs.Fileshare.Name)
+	if err != nil {
+		log.Error(err)
+		return nil, err
+	}
+	log.Infof("Get File share permission response = %+v", getFSperm.Response().Header)
+*/
+
+	getFS.Response().Header.Set(utils.AZURE_FILESHARE_USAGE_BYTES, strconv.FormatInt(int64(getFSstats.ShareUsageBytes), 10))
+	meta, err := ToStruct(getFS.Response().Header)
+	if err != nil {
+		log.Error(err)
+		return nil, err
+	}
+
+	log.Infof("Get File share metadata = %+v", meta)
+
+	return &file.GetFileShareResponse{
+		Fileshare: &file.FileShare{
+			Name:                 fs.Fileshare.Name,
+			Size:                 fs.Fileshare.Size * utils.GB_FACTOR,
+			Status:               "success",
+			Metadata:             meta,
+		},
+	}, nil
 }
 
 func (ad *AzureAdapter) ListFileShare(ctx context.Context, fs *file.ListFileShareRequest) (*file.ListFileShareResponse, error) {
@@ -119,17 +251,18 @@ func (ad *AzureAdapter) ListFileShare(ctx context.Context, fs *file.ListFileShar
 /*
 func ListFileshares(accountName, accountKey string) {
 	credential, err := azfile.NewSharedKeyCredential(accountName, accountKey)
-	u, _ := url.Parse(fmt.Sprintf("https://%s.file.core.windows.net/aks-share2", accountName))
+	u, _ := url.Parse(fmt.Sprintf("https://%s.file.core.windows.net/himanshu", accountName))
 	if err != nil {
 		log.Infof("create credential[Azure Blob] failed, err:%v\n", err)
 		return
 	}
 	shareURL := azfile.NewShareURL(*u, azfile.NewPipeline(credential, azfile.PipelineOptions{}))
 	ctx := context.Background()
-	_, err = shareURL.Create(ctx, azfile.Metadata{"createdby": "AKS"}, 2)
+	result, err := shareURL.Create(ctx, azfile.Metadata{"createdby": "AKS"}, 2)
 	if err != nil {
 		log.Fatal(err)
 	}
+	log.Infof("Create File share response = %+v", result)
 	// List file share
 	basicClient, client_err := storage.NewBasicClient(accountName, accountKey)
 	if client_err != nil {
@@ -142,6 +275,7 @@ func ListFileshares(accountName, accountKey string) {
 		fmt.Println("Error in response")
 		return
 	}
+	log.Infof("List File share response = %+v", rsp)
 	fmt.Println(rsp)
 }
 */
