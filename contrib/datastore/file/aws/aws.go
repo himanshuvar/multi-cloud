@@ -64,6 +64,7 @@ func (ad *AwsAdapter) ParseFileShare(fsDesc *efs.FileSystemDescription) (*pb.Fil
 	}
 
 	fileshare := &pb.FileShare{
+		Name:      *fsDesc.Name,
 		Size:      *fsDesc.SizeInBytes.Value,
 		Encrypted: *fsDesc.Encrypted,
 		Status:    *fsDesc.LifeCycleState,

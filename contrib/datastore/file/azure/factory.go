@@ -13,9 +13,12 @@ type AzureFSDriverFactory struct {
 
 func (factory *AzureFSDriverFactory) CreateFileStorageDriver(backend *backendpb.BackendDetail) (driver.FileStorageDriver, error) {
 	log.Infof("Entered to create azure file share driver")
+
+	backend.Endpoint = "https://" + backend.Access + ".file.core.windows.net/"
 	endpoint := backend.Endpoint
 	AccessKeyID := backend.Access
 	AccessKeySecret := backend.Security
+
 	ad := AzureAdapter{}
 	pipeline, err := ad.createPipeline(endpoint, AccessKeyID, AccessKeySecret)
 	if err != nil {
