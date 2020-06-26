@@ -14,6 +14,9 @@
 
 syntax = "proto3";
 
+package block;
+option go_package = ".;block";
+
 service Block {
     rpc ListVolumes (VolumeRequest) returns (ListVolumesResponse) {
     }
@@ -58,8 +61,3 @@ message ListVolumesResponse {
 message VolumeRequest {
     string backendId = 1;
 }
-
-message BaseRequest {
-    string id = 1;
-}
-
