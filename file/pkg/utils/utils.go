@@ -24,10 +24,10 @@ import (
 	"github.com/opensds/multi-cloud/backend/proto"
 	"github.com/opensds/multi-cloud/file/pkg/model"
 
-	pstruct "github.com/golang/protobuf/ptypes/struct"
 	driverutils "github.com/opensds/multi-cloud/contrib/utils"
 	pb "github.com/opensds/multi-cloud/file/proto"
 	log "github.com/sirupsen/logrus"
+	pstruct "google.golang.org/protobuf/types/known/structpb"
 )
 
 const (

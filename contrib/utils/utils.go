@@ -17,11 +17,12 @@ package utils
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/golang/protobuf/jsonpb"
 	"math/rand"
 	"time"
 
-	"github.com/golang/protobuf/jsonpb"
-	pstruct "github.com/golang/protobuf/ptypes/struct"
+	"google.golang.org/protobuf/encoding/protojson"
+	pstruct "google.golang.org/protobuf/types/known/structpb"
 )
 
 const (
@@ -50,10 +51,10 @@ func ConvertMapToStruct(m map[string]interface{}) (*pstruct.Struct, error) {
 		return nil, err
 	}
 
-	reader := bytes.NewReader(byteArray)
+	//reader := bytes.NewReader(byteArray)
 
 	pbs := &pstruct.Struct{}
-	if err = jsonpb.Unmarshal(reader, pbs); err != nil {
+	if err = protojson.Unmarshal(byteArray, pbs); err != nil {
 		return nil, err
 	}
 

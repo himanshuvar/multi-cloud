@@ -15,16 +15,15 @@
 package azure
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
 
 	"github.com/Azure/azure-storage-file-go/azfile"
-	"github.com/golang/protobuf/jsonpb"
 	"github.com/micro/go-micro/v2/util/log"
+	"google.golang.org/protobuf/encoding/protojson"
 
-	pstruct "github.com/golang/protobuf/ptypes/struct"
+	pstruct "google.golang.org/protobuf/types/known/structpb"
 )
 
 const (
@@ -47,10 +46,10 @@ func ConvertHeaderToStruct(msg map[string][]string) (*pstruct.Struct, error) {
 		return nil, err
 	}
 
-	reader := bytes.NewReader(byteArray)
+	//reader := bytes.NewReader(byteArray)
 
 	pbs := &pstruct.Struct{}
-	if err = jsonpb.Unmarshal(reader, pbs); err != nil {
+	if err = protojson.Unmarshal(byteArray, pbs); err != nil {
 		return nil, err
 	}
 
@@ -83,10 +82,10 @@ func ConvertStructToStructMap(msg map[string]string) (*pstruct.Struct, error) {
 		return nil, err
 	}
 
-	reader := bytes.NewReader(byteArray)
+	//reader := bytes.NewReader(byteArray)
 
 	pbs := &pstruct.Struct{}
-	if err = jsonpb.Unmarshal(reader, pbs); err != nil {
+	if err = protojson.Unmarshal(byteArray, pbs); err != nil {
 		return nil, err
 	}
 
